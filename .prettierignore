@@ -1,0 +1,6 @@
+coverage
+dist
+public
+node_modules
+.vscode
+**.log

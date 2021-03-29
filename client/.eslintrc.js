@@ -16,7 +16,7 @@ module.exports = {
 
 	plugins: ['simple-import-sort', 'prettier'],
 
-	extends: ['eslint:recommended', 'prettier'],
+	extends: ['eslint:recommended', 'prettier', 'plugin:react/recommended'],
 
 	rules: {
 		'prettier/prettier': 'error',
@@ -24,5 +24,11 @@ module.exports = {
 		'simple-import-sort/exports': 'error',
 		'sort-imports': 'off',
 		'import/order': 'off'
+	},
+
+	settings: {
+		react: {
+			version: 'detect'
+		}
 	}
 }

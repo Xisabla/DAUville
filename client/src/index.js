@@ -1,11 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap'
 
-const body = document.querySelector('body')
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-const title = document.createElement('h1')
-title.textContent = 'Hello World'
+import { App } from './App'
 
-body.append(title)
-
-console.log('App running')
+ReactDOM.render(<App />, document.getElementById('root'))

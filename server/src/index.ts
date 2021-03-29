@@ -1,12 +1,28 @@
-import express from 'express'
-import path from 'path'
+import { Socket } from 'socket.io'
 
-const app = express()
-const port = 3000
-const publicPath = path.resolve('../client/public')
+import { Application } from './core/Application'
+import { Module } from './core/Module'
 
-app.use(express.static(publicPath))
+const app = new Application({ public: '../client/public' })
 
-app.listen(port, () => {
-	console.log(`Listening to http://localhost:${port}`)
-})
+// Note: This is just an example for testing
+class MyModule extends Module {
+	constructor(app: Application) {
+		super(app)
+
+		console.log('HELLO THERE')
+	}
+
+	get name() {
+		return 'MyModule'
+	}
+
+	public onSocketJoin(socket: Socket): void {
+		console.log(`Socket ${socket.id} joined (from ${this.name})`)
+	}
+}
+
+// ---- Register modules -----------------------------------------------------------------
+app.registerModule(MyModule)
+
+app.run()

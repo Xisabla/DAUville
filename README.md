@@ -1,6 +1,6 @@
 # DAUville Project
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Xisabla/DAUville/Build?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/Xisabla/DAUville?style=for-the-badge)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Xisabla/DAUville/Node.js%20build?style=for-the-badge) ![GitHub last commit](https://img.shields.io/github/last-commit/Xisabla/DAUville?style=for-the-badge)
 
 DAUville stands for "Dashboard Agriculture Urbaine". It is a demonstration, a first version of a web interface that allow to monitor and manage teams and resources around urban agriculture
 

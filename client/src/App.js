@@ -2,6 +2,8 @@ import 'bootstrap'
 
 import React, { Component } from 'react'
 
+console.log('Hello World')
+
 export class App extends Component {
 	render() {
 		return (

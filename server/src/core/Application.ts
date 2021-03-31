@@ -1,9 +1,10 @@
 import debug from 'debug'
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import http from 'http'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
 
+import { Endpoint, EndpointList, EndpointPath, EndpointType, SocketEndpoint } from './Endpoint'
 import { Constructor as Instantiable } from './Instantiable'
 import { Module } from './Module'
 
@@ -20,37 +21,6 @@ export interface AppOptions {
 	/** Server port, default: 3000 */
 	port?: number
 }
-
-// ---- Interfaces: Endpoint -------------------------------------------------------------
-
-/**
- * Common base for each type of Endpoint
- */
-export interface EndpointBase {
-	path: string
-	handler: (path: string, ...args: any[]) => any
-}
-
-/**
- * Interface of an HTTP endpoint, must be used by modules to register a new HTTP endpoint in the application
- */
-export interface HTTPEndpoint extends EndpointBase {
-	type: 'HTTP'
-	handler: (path: string, req: Request, res: Response, next: NextFunction) => any
-}
-
-/**
- * Interface of a socket endpoint, must be used by modules to register a new socket endpoint in the application
- */
-export interface SocketEndpoint extends EndpointBase {
-	type: 'Socket'
-	handler: (path: string, socket: Socket) => any
-}
-
-/**
- * Complete endpoint interface
- */
-export type Endpoint = HTTPEndpoint | SocketEndpoint
 
 // ---- Application ----------------------------------------------------------------------
 
@@ -81,6 +51,8 @@ export class Application {
 	private _modules: Module[]
 	/** Connected sockets */
 	private _sockets: Socket[]
+	/** Registered endpoints */
+	private _endpoints: EndpointList
 
 	// ---- Configuration ----------------------------------------------------------------
 
@@ -95,6 +67,7 @@ export class Application {
 		// Initialize data
 		this._modules = []
 		this._sockets = []
+		this._endpoints = new EndpointList()
 
 		// Initialize server
 		this._app = express()
@@ -116,9 +89,22 @@ export class Application {
 		const module = new moduleClass(this)
 
 		this._modules.push(module)
-		log(`Module '${module.name}' registered`)
+		this._endpoints.addMany(module.endpoints)
+		log(`Module '${module.name}' registered, ${module.endpoints.length} endpoint(s) added`)
 
 		return module
+	}
+
+	/**
+	 * Fetch the endpoint matching the path and type
+	 * @param path Path to match
+	 * @param type Endpoint type to match
+	 * @returns The endpoint if one is found, otherwise null
+	 */
+	private getEndpoint(path: EndpointPath, type: EndpointType): Endpoint | null {
+		const endpoints = this._endpoints.find({ path, type })
+
+		return endpoints.length > 0 ? endpoints[endpoints.length - 1] : null
 	}
 
 	// ---- Sockets ----------------------------------------------------------------------
@@ -132,15 +118,60 @@ export class Application {
 
 		this._sockets.push(socket)
 		this._modules.forEach((module) => module.onSocketJoin(socket))
+		log(`Socket ${socket.id} connected`)
 
-		log(`Socket connected: ${id}, stored`)
+		// Listen for socket requests
+		this.listenSocketRequests(socket)
 
+		// Remove leaving sockets
 		socket.on('disconnect', () => {
 			this._sockets = this._sockets.filter((s) => s.id !== id)
 			this._modules.forEach((module) => module.onSocketLeave(socket))
 
-			log(`Socket disconnected: ${id}, removed`)
+			log(`Socket disconnected: ${id}`)
 		})
+	}
+
+	/**
+	 * Listen to requests from the socket to redirect them
+	 * @param socket Socket to listen to the requests from
+	 * @returns Whatever the handler returns
+	 */
+	private listenSocketRequests(socket: Socket): any {
+		socket.on('request', (data: any) => {
+			// Check for valid arguments
+			if (data?.path) {
+				return this.handleSocketRequest(socket, data.path, data)
+			} else {
+				log(`Request from ${socket.id} without path, redirecting to default path '/'`)
+
+				return this.handleSocketRequest(socket, '/', data)
+			}
+		})
+	}
+
+	/**
+	 * Find the good handler and use it for the incoming request
+	 * @param socket Socket to handle the request from
+	 * @param path Path of the request
+	 * @param data Data transmitted by the socket
+	 * @returns Whatever the handler returns
+	 */
+	private handleSocketRequest(socket: Socket, path: EndpointPath, data: any): any {
+		const endpoint: Endpoint | null = this.getEndpoint(path, 'Socket')
+
+		// Check for matching endpoint
+		if (endpoint) {
+			log(`Request from ${socket.id} with path '${path}', redirected to endpoint`)
+
+			const _endpoint = endpoint as SocketEndpoint
+			return _endpoint.handle(path as EndpointPath, data, socket)
+		} else {
+			// TODO: No endpoint, send error
+			log(`Request from ${socket.id} with path '${path}', no matching endpoint`)
+
+			return null
+		}
 	}
 
 	get sockets(): Socket[] {

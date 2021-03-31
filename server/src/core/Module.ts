@@ -10,23 +10,28 @@ import { Endpoint, EndpointPath } from './Endpoint'
 export abstract class Module {
 	// ---- Attributes -------------------------------------------------------------------
 
+	/** Module ID */
+	private readonly _id: number
 	/** Application instance */
-	private _app: Application
+	private readonly _app: Application
+	/** Module logger */
+	protected readonly _log: Debugger
 	/** Connected sockets */
 	private _sockets: Socket[]
 	/** Module endpoints */
 	private _endpoints: Endpoint[]
-	/** Module logger */
-	protected readonly _log: Debugger
 
 	/** Module name */
-	protected _name: string
+	protected readonly _name: string
+
+	/** ID counter */
+	private static _counter = 0
 
 	// ---- Basics -----------------------------------------------------------------------
 
-	constructor(app: Application, name: string) {
+	constructor(app: Application, name?: string) {
 		this._app = app
-		this._name = name
+		this._name = name ?? `Module#${Module._counter++}`
 		// Note: this doesn't copy the array from the application but makes a reference to it
 		// (https://javascript.info/object-copy)
 		this._sockets = app.sockets

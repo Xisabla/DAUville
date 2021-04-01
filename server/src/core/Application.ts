@@ -1,6 +1,7 @@
 import debug from 'debug'
 import express from 'express'
 import http from 'http'
+import mongoose, { Mongoose } from 'mongoose'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
 
@@ -20,6 +21,17 @@ export interface AppOptions {
 	public?: string
 	/** Server port, default: 3000 */
 	port?: number
+	/** Mongo database connect information */
+	db?: {
+		/** Database access url */
+		url: string
+		/** Database access user */
+		user?: string
+		/** Database user's password */
+		pass?: string
+		/** Database name */
+		dbname?: string
+	}
 }
 
 // ---- Application ----------------------------------------------------------------------
@@ -45,6 +57,12 @@ export class Application {
 	private _server: http.Server
 	/** SocketIO server */
 	private _io: SocketIO.Server
+
+	// Database
+	/** Database asynchronous connection promise */
+	private _dbConnectionPromise: Promise<Mongoose | null>
+	/** Application database instance */
+	private _db?: Mongoose
 
 	// Modules
 	/** Registered modules */
@@ -74,8 +92,53 @@ export class Application {
 		this._server = http.createServer(this._app)
 		this._io = new SocketIO.Server(this._server)
 
+		// Initialize DB connection
+		this._dbConnectionPromise = options.db
+			? this.connectDatabase(options.db)
+			: new Promise((resolve) => resolve(null))
+
 		// Set event handlers scope
 		this.onSocketJoin = this.onSocketJoin.bind(this)
+	}
+
+	// ---- Database -------------------------------------------------------------------------
+
+	/**
+	 * Try to connect to the mongo database
+	 * @param options Credentials
+	 * @returns Mongoose instance
+	 */
+	private connectDatabase(options: AppOptions['db']): Promise<Mongoose> {
+		const { url, user, pass, dbname: dbName } = options
+
+		log('Attempting to connect to mongodb server:', url)
+
+		return mongoose
+			.connect(url, {
+				useNewUrlParser: true,
+				useUnifiedTopology: true,
+				user,
+				pass,
+				dbName
+			})
+			.then((db) => {
+				this._db = db
+
+				log('Successfully connected to the database')
+
+				return db
+			})
+			.catch((err) => {
+				log(`Unable to connect to the database: ${err}`)
+				log(
+					'The application will still try to run without the database connection, it might occur some errors or crash'
+				)
+				return err
+			})
+	}
+
+	get db(): Mongoose {
+		return this._db
 	}
 
 	// ---- Modules ----------------------------------------------------------------------
@@ -85,7 +148,10 @@ export class Application {
 	 * @param moduleClass Class of the module to register
 	 * @returns The instance of the module
 	 */
-	public registerModule(moduleClass: Instantiable<Module>): Module {
+	public async registerModule(moduleClass: Instantiable<Module>): Promise<Module> {
+		// As modules might need to access the database, we make sure that the connection is set before instantiating it
+		await this._dbConnectionPromise
+
 		const module = new moduleClass(this)
 
 		this._modules.push(module)
@@ -184,13 +250,17 @@ export class Application {
 	 * Start the server
 	 * @returns The instance of the HTTP server
 	 */
-	public run(): http.Server {
+	public async run(): Promise<http.Server> {
 		const { _app: app, _io: io, _server: server, _port: port, _public: pub } = this
 
 		if (pub) app.use(express.static(pub))
 
 		io.on('connection', this.onSocketJoin)
 
+		// Wait for db connection
+		await this._dbConnectionPromise
+
+		// Start the server
 		return server.listen(port, () => {
 			log(`Server started on port ${port}`)
 			log(`http://localhost:${port}`)

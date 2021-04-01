@@ -1,10 +1,12 @@
+import { config } from 'dotenv'
 import { Socket } from 'socket.io'
 
 import { Application } from './core/Application'
 import { EndpointPath } from './core/Endpoint'
 import { Module } from './core/Module'
 
-const app = new Application({ public: '../client/public' })
+// Read .env file information
+config()
 
 // Note: This is just an example for testing
 class MyModule extends Module {
@@ -40,7 +42,19 @@ class MyModule extends Module {
 	}
 }
 
-// ---- Register modules -----------------------------------------------------------------
+// ---- App ------------------------------------------------------------------------------
+const app = new Application({
+	public: '../client/public',
+	db: {
+		url: process.env.MONGO_URL,
+		user: process.env.MONGO_USER,
+		pass: process.env.MONGO_PASS,
+		dbname: process.env.MONGO_DB
+	}
+})
+
+// Register modules
 app.registerModule(MyModule)
 
+// Run the server
 app.run()

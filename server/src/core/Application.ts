@@ -258,14 +258,14 @@ export class Application {
 	 * @returns Whatever the handler returns
 	 */
 	private handleSocketRequest(socket: Socket, path: EndpointPath, data: any): any {
-		const endpoint: Endpoint | null = this.getEndpoint(path, 'Socket')
+		const edp: Endpoint | null = this.getEndpoint(path, 'Socket')
 
 		// Check for matching endpoint
-		if (endpoint) {
+		if (edp) {
 			log(`Request from ${socket.id} with path '${path}', redirected to endpoint`)
 
-			const _endpoint = endpoint as SocketEndpoint
-			return _endpoint.handle(path as EndpointPath, data, socket)
+			const endpoint = edp as SocketEndpoint
+			return endpoint.handle(path as EndpointPath, data, socket)
 		} else {
 			// TODO: No endpoint, send error
 			log(`Request from ${socket.id} with path '${path}', no matching endpoint`)

@@ -1,4 +1,5 @@
 import { config } from 'dotenv'
+import { Request, Response } from 'express'
 import { Socket } from 'socket.io'
 
 import { Application } from './core/Application'
@@ -27,9 +28,19 @@ class MyModule extends Module {
 		this.registerTask
 		*/
 
+		// HTTP endpoint
+		this.addEndpoint({ type: 'HTTP', path: '/test', method: 'GET', handle: this.testHandler.bind(this) })
+
+		// Socket endpoint
 		this.addEndpoint({ type: 'Socket', path: '/getUsername', handle: this.getUsernameHandler.bind(this) })
+
+		// TODO: this.registerTask
+		// TODO²: this.addEndpoints([]), this.registerTasks([])
 	}
 
+	/**
+	 * /getUsername socket handler
+	 */
 	public getUsernameHandler(path: EndpointPath, data: any[], socket: Socket): any {
 		return socket.emit('response', {
 			path,
@@ -37,6 +48,17 @@ class MyModule extends Module {
 		})
 	}
 
+	/**
+	 * /test HTTP handler
+	 */
+	public testHandler(req: Request, res: Response) {
+		this._log(`Handling request ${req.url} from ${req.ip}`)
+		return res.json({ message: 'Hello world, this is just a test HTTP endpoint' })
+	}
+
+	/**
+	 * Log when a socket joins and gets spread
+	 */
 	public onSocketJoin(socket: Socket): void {
 		this._log(`Socket ${socket.id} connected (caught from ${this.name})`)
 	}

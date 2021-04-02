@@ -5,7 +5,7 @@ import mongoose, { Mongoose } from 'mongoose'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
 
-import { Endpoint, EndpointList, EndpointPath, EndpointType, SocketEndpoint } from './Endpoint'
+import { Endpoint, EndpointList, EndpointPath, EndpointType, HTTPEndpoint, SocketEndpoint } from './Endpoint'
 import { Constructor as Instantiable } from './Instantiable'
 import { Module } from './Module'
 
@@ -149,6 +149,8 @@ export class Application {
 	 * @returns The instance of the module
 	 */
 	public async registerModule(moduleClass: Instantiable<Module>): Promise<Module> {
+		const { _app: app } = this
+
 		// As modules might need to access the database, we make sure that the connection is set before instantiating it
 		await this._dbConnectionPromise
 
@@ -156,6 +158,38 @@ export class Application {
 
 		this._modules.push(module)
 		this._endpoints.addMany(module.endpoints)
+
+		// Map HTTP Requests, Socket requests are seeked at runtime
+		module.endpoints
+			.filter((endpoint) => endpoint.type === 'HTTP')
+			.forEach((edp) => {
+				const endpoint = edp as HTTPEndpoint
+
+				switch (endpoint.method) {
+					case 'DELETE': {
+						app.delete(endpoint.path, endpoint.handle)
+						break
+					}
+					case 'PATCH': {
+						app.patch(endpoint.path, endpoint.handle)
+						break
+					}
+					case 'POST': {
+						app.post(endpoint.path, endpoint.handle)
+						break
+					}
+					case 'PUT': {
+						app.put(endpoint.path, endpoint.handle)
+						break
+					}
+					default:
+					case 'GET': {
+						app.get(endpoint.path, endpoint.handle)
+						break
+					}
+				}
+			})
+
 		log(`Module '${module.name}' registered, ${module.endpoints.length} endpoint(s) added`)
 
 		return module

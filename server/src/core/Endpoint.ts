@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { RequestHandler } from 'express'
 import { Socket } from 'socket.io'
 
 // ---- Interfaces -----------------------------------------------------------------------
@@ -16,7 +16,7 @@ export type HTTPEndpointType = 'HTTP'
 /**
  * Endpoint handler for http endpoints
  */
-export type HTTPEndpointHandler = (path: EndpointPath, req: Request, res: Response, next: NextFunction) => any
+export type HTTPEndpointHandler = RequestHandler
 
 /**
  * Interface of an http endpoint, must be used by modules to register a new HTTP endpoint in the application

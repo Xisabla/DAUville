@@ -14,29 +14,14 @@ class MyModule extends Module {
 	constructor(app: Application) {
 		super(app, 'MyModule')
 
-		/*
-		// HTTP endpoints
-		// fetch()/GET/POST/... --> express --> response
-		this.addEndpoint("/route/to/endpoint", endpoint)
-
-		// Socket endpoints
-		// event --> socket route --> ... > exchanges <... --> final response
-		this.addEndpoint("/route/to/endpoint", endpoint)
-
-		// Socket emit
-		// task --> (check right/need ??) --> socket --> on --> ... > exchanges < ... --> final response
-		this.registerTask
-		*/
-
-		// HTTP endpoint
-		this.addEndpoint({ type: 'HTTP', path: '/test', method: 'GET', handle: this.testHandler.bind(this) })
-
-		// Socket endpoint
-		this.addEndpoint({ type: 'Socket', path: '/getUsername', handle: this.getUsernameHandler.bind(this) })
+		this.addEndpoints([
+			// HTTP endpoint
+			{ type: 'HTTP', path: '/test', method: 'GET', handle: this.testHandler.bind(this) },
+			// Socket endpoint
+			{ type: 'Socket', path: '/getUsername', handle: this.getUsernameHandler.bind(this) }
+		])
 
 		this.registerTask('*/10 * * * * *', this.taskActionMethod.bind(this))
-
-		// TODO: this.addEndpoints([]), this.registerTasks([])
 	}
 
 	/**

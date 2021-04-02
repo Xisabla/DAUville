@@ -55,6 +55,13 @@ export abstract class Module {
 		this._endpoints.push(endpoint)
 	}
 
+	/**
+	 * Add multiple endpoints
+	 */
+	protected addEndpoints(endpoints: Endpoint[]): void {
+		endpoints.map((endpoint) => this.addEndpoint(endpoint))
+	}
+
 	get endpoints(): Endpoint[] {
 		return this._endpoints
 	}
@@ -75,6 +82,13 @@ export abstract class Module {
 
 	// ---- Tasks ----------------------------------------------------------------------------
 
+	/**
+	 * Register a task
+	 * @param schedule Schedule of the task: Date, Moment or cron schedule
+	 * @param action Action the will be run on schedule
+	 * @param start Does auto start (default: true)
+	 * @returns The task
+	 */
 	protected registerTask(schedule: TaskSchedule, action: TaskAction, start = true): Task {
 		return new Task({ origin: this, schedule, action, start })
 	}

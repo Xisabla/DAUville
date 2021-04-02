@@ -6,6 +6,7 @@ import { Socket } from 'socket.io'
 
 import { Application } from './Application'
 import { Endpoint, EndpointPath } from './Endpoint'
+import { Task, TaskAction, TaskSchedule } from './Task'
 
 export abstract class Module {
 	// ---- Attributes -------------------------------------------------------------------
@@ -71,4 +72,10 @@ export abstract class Module {
 	 * @param socket Client socket
 	 */
 	public onSocketLeave(socket: Socket): any {}
+
+	// ---- Tasks ----------------------------------------------------------------------------
+
+	protected registerTask(schedule: TaskSchedule, action: TaskAction, start = true): Task {
+		return new Task({ origin: this, schedule, action, start })
+	}
 }

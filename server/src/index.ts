@@ -34,8 +34,9 @@ class MyModule extends Module {
 		// Socket endpoint
 		this.addEndpoint({ type: 'Socket', path: '/getUsername', handle: this.getUsernameHandler.bind(this) })
 
-		// TODO: this.registerTask
-		// TODO²: this.addEndpoints([]), this.registerTasks([])
+		this.registerTask('*/10 * * * * *', this.taskActionMethod.bind(this))
+
+		// TODO: this.addEndpoints([]), this.registerTasks([])
 	}
 
 	/**
@@ -54,6 +55,15 @@ class MyModule extends Module {
 	public testHandler(req: Request, res: Response) {
 		this._log(`Handling request ${req.url} from ${req.ip}`)
 		return res.json({ message: 'Hello world, this is just a test HTTP endpoint' })
+	}
+
+	/**
+	 * Task action
+	 */
+	public async taskActionMethod(): Promise<any> {
+		console.log(`Task triggered (every 10s)`)
+
+		return Promise.resolve()
 	}
 
 	/**

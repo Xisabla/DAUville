@@ -4,9 +4,7 @@
 import debug, { Debugger } from 'debug'
 import { Socket } from 'socket.io'
 
-import { Application } from './Application'
-import { Endpoint, EndpointPath } from './Endpoint'
-import { Task, TaskAction, TaskSchedule } from './Task'
+import { Application, Endpoint, Task, TaskAction, TaskSchedule } from './'
 
 export abstract class Module {
 	// ---- Attributes -------------------------------------------------------------------

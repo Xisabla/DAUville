@@ -5,9 +5,16 @@ import mongoose, { Mongoose } from 'mongoose'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
 
-import { Endpoint, EndpointList, EndpointPath, EndpointType, HTTPEndpoint, SocketEndpoint } from './Endpoint'
-import { Constructor as Instantiable } from './Instantiable'
-import { Module } from './Module'
+import {
+	Constructor as Instantiable,
+	Endpoint,
+	EndpointList,
+	EndpointPath,
+	EndpointType,
+	HTTPEndpoint,
+	Module,
+	SocketEndpoint
+} from './'
 
 const log = debug('core:Application')
 

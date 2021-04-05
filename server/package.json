@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start": "cross-env DEBUG=core:Application node ./",
+    "start": "cross-env NODE_ENV=production DEBUG=core:Application node ./",
     "build": "tsc",
-    "dev": "cross-env DEBUG=core:*,module:*,task:* ts-node-dev src/index.ts",
+    "dev": "cross-env NODE_ENV=development DEBUG=core:*,module:*,task:* ts-node-dev src/index.ts",
     "clean": "rimraf ./dist ./coverage",
     "lint": "eslint ./ --fix",
     "prebuild": "npm run lint",

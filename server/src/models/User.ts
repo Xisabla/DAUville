@@ -5,6 +5,18 @@ import { v4 as uuid } from 'uuid'
 
 import config from '../config'
 
+/**
+ * Content of the JWT user's payload
+ */
+export interface UserJWTPayload {
+	userId: string
+	params: {
+		_uuid: string
+		[key: string]: any
+	}
+	iat: number
+}
+
 // ---- Schema interface -----------------------------------------------------------------
 export interface IUserSchema extends Document {
 	/** Email address of the user */
@@ -74,7 +86,7 @@ UserSchema.methods.generateToken = async function (params = {}): Promise<string>
 	params._uuid = uuid()
 
 	// Create the token and
-	const token = sign({ ...{ user: this }, ...{ params } }, config.security.secret)
+	const token = sign({ ...{ userId: this._id }, ...{ params } }, config.security.secret)
 
 	// Assign and save
 	this.token = token

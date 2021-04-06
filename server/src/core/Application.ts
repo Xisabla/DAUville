@@ -140,6 +140,8 @@ export class Application {
 		return mongoose
 			.connect(url, {
 				useNewUrlParser: true,
+				useFindAndModify: false,
+				useCreateIndex: true,
 				useUnifiedTopology: true,
 				user,
 				pass,

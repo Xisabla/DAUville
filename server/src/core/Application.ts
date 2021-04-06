@@ -3,6 +3,7 @@ import debug from 'debug'
 import express from 'express'
 import session from 'express-session'
 import http from 'http'
+import memorystore from 'memorystore'
 import mongoose, { Mongoose } from 'mongoose'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
@@ -20,6 +21,7 @@ import {
 } from './'
 
 const log = debug('core:Application')
+const MemoryStore = memorystore(session)
 
 // ---- Interfaces -----------------------------------------------------------------------
 
@@ -102,9 +104,13 @@ export class Application {
 		this._app.use(urlencoded({ extended: true }))
 		this._app.use(
 			session({
-				secret: config.security.secret,
+				cookie: { secure: true },
 				saveUninitialized: true,
-				cookie: { secure: true }
+				store: new MemoryStore({
+					checkPeriod: 86400000 // prune expired entries every 24h
+				}),
+				resave: false,
+				secret: config.security.secret
 			})
 		)
 		this._server = http.createServer(this._app)

@@ -1,10 +1,13 @@
+import { urlencoded } from 'body-parser'
 import debug from 'debug'
 import express from 'express'
+import session from 'express-session'
 import http from 'http'
 import mongoose, { Mongoose } from 'mongoose'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
 
+import config from '../config'
 import {
 	Constructor as Instantiable,
 	Endpoint,
@@ -96,6 +99,14 @@ export class Application {
 
 		// Initialize server
 		this._app = express()
+		this._app.use(urlencoded({ extended: true }))
+		this._app.use(
+			session({
+				secret: config.security.secret,
+				saveUninitialized: true,
+				cookie: { secure: true }
+			})
+		)
 		this._server = http.createServer(this._app)
 		this._io = new SocketIO.Server(this._server)
 

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { Application, Module } from '../core'
-import { IUserSchema, User } from '../models/User'
+import { IUserSchema, User } from '../models'
 
 // NOTE: Small tweak to define possible session content from express
 // See https://stackoverflow.com/a/65696437

@@ -30,9 +30,11 @@ export function devProdEnv(devKey: string, prodKey: string, defaultValue: string
 
 // ---- Config ---------------------------------------------------------------------------
 import app from './application'
-import db from './Database'
+import db from './database'
+import security from './security'
 
 export default {
 	app,
-	db
+	db,
+	security
 }

@@ -8,9 +8,36 @@ DAUville stands for "Dashboard Agriculture Urbaine". It is a demonstration, a fi
 
 ## Requirements
 
-- Node.js
+- Node.js >= 14
+- MongoDB server
 
 ## Getting started
+
+Clone the project, edit (or create) the file `server/.env` with following information:
+
+```
+# -- Application (facultative)
+# Path to public dir
+PUBLIC_PATH=../client/public
+# Port for production
+PORT=8080
+# Port for development
+PORT_DEV=3000
+
+# -- Security (facultative)
+# Salt rounds count for bcrypt hashing
+SALT_ROUNDS=10
+# Secret phrase for sessions and JWT
+SECRET=secret
+
+# -- Database
+MONGO_URL=mongodb+srv://mymongoserverurl:theport/
+MONGO_USER=mongod_buser
+MONGO_PASS=mongodb_user_password
+MONGO_DB=mongodb_database_name
+```
+
+Then run the following commands from the root of the project:
 
 ```bash
 npm install         # Install client and server dependencies

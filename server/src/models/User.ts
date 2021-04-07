@@ -1,5 +1,5 @@
 import { compare, hash } from 'bcrypt'
-import { sign } from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 import { Document, Model, model, Schema } from 'mongoose'
 import { v4 as uuid } from 'uuid'
 
@@ -55,15 +55,17 @@ export const UserSchema = new Schema<IUserSchema, Model<IUserSchema>>(
 // ---- Model Interface ------------------------------------------------------------------
 export interface IUser extends Model<IUserSchema> {
 	// Statics
-	/** Check if a user already exist with a given email address */
-	doesExist(email: string): Promise<boolean>
-	/** Hash a plain text password */
-	hashPassword(password: string): Promise<string>
 	/** Check if a hashed password correspond to a plain text password */
-	checkPassword(password: string, hash: string): Promise<boolean>
 	/** Check for user credentials, generate its token and return information */
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	authenticate(email: string, password: string, params?: object): Promise<IUserSchema | false>
+	checkPassword(password: string, hash: string): Promise<boolean>
+	/** Check if a user already exist with a given email address */
+	doesExist(email: string): Promise<boolean>
+	/** Get a user by its token */
+	getByToken(token: string): Promise<IUserSchema | false>
+	/** Hash a plain text password */
+	hashPassword(password: string): Promise<string>
 }
 
 // ---- Methods --------------------------------------------------------------------------
@@ -97,36 +99,6 @@ UserSchema.methods.generateToken = async function (params = {}): Promise<string>
 
 // ---- Statics --------------------------------------------------------------------------
 /**
- * Check if a user already exist with a given email address
- * @param email Email address to check
- * @returns True if a user already exist with the given email address, false otherwise
- */
-UserSchema.statics.doesExist = async function (email: string): Promise<boolean> {
-	const user = await User.findOne({ email })
-
-	return user ? true : false
-}
-
-/**
- * Hash a plain text password
- * @param password Password to hash
- * @returns The hashed password
- */
-UserSchema.statics.hashPassword = async function (password: string): Promise<string> {
-	return await hash(password, config.security.saltRounds)
-}
-
-/**
- * Check if a hashed password correspond to a plain text password
- * @param password Password to compare to the hash
- * @param hash Hash to compare to the password
- * @returns True if the password and the hash match, false otherwise
- */
-UserSchema.statics.checkPassword = async function (password: string, hash: string): Promise<boolean> {
-	return await compare(password, hash)
-}
-
-/**
  * Check for user credentials, generate its token and return information
  * @param email Email credentials
  * @param password Password credentials
@@ -149,6 +121,54 @@ UserSchema.statics.authenticate = async function (
 	}
 
 	return false
+}
+
+/**
+ * Check if a hashed password correspond to a plain text password
+ * @param password Password to compare to the hash
+ * @param hash Hash to compare to the password
+ * @returns True if the password and the hash match, false otherwise
+ */
+UserSchema.statics.checkPassword = async function (password: string, hash: string): Promise<boolean> {
+	return await compare(password, hash)
+}
+
+/**
+ * Check if a user already exist with a given email address
+ * @param email Email address to check
+ * @returns True if a user already exist with the given email address, false otherwise
+ */
+UserSchema.statics.doesExist = async function (email: string): Promise<boolean> {
+	const user = await User.findOne({ email })
+
+	return user ? true : false
+}
+
+/**
+ * Get a user by its token
+ * @param token JWT of the current session of the user, will be used to get the user id
+ * @returns The User if there is any user matching (matching ID from the payload AND the token), false otherwise
+ */
+UserSchema.statics.getByToken = async function (token: string): Promise<IUserSchema | false> {
+	try {
+		const payload: UserJWTPayload = verify(token as string, config.security.secret) as UserJWTPayload
+		const user = await User.findById(payload.userId)
+
+		if (user && user.token === token) return user
+	} catch (error) {
+		return false
+	}
+
+	return false
+}
+
+/**
+ * Hash a plain text password
+ * @param password Password to hash
+ * @returns The hashed password
+ */
+UserSchema.statics.hashPassword = async function (password: string): Promise<string> {
+	return await hash(password, config.security.saltRounds)
 }
 
 // ---- Model ----------------------------------------------------------------------------

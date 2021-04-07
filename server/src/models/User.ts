@@ -55,10 +55,10 @@ export const UserSchema = new Schema<IUserSchema, Model<IUserSchema>>(
 // ---- Model Interface ------------------------------------------------------------------
 export interface IUser extends Model<IUserSchema> {
 	// Statics
-	/** Check if a hashed password correspond to a plain text password */
 	/** Check for user credentials, generate its token and return information */
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	authenticate(email: string, password: string, params?: object): Promise<IUserSchema | false>
+	/** Check if a hashed password correspond to a plain text password */
 	checkPassword(password: string, hash: string): Promise<boolean>
 	/** Check if a user already exist with a given email address */
 	doesExist(email: string): Promise<boolean>

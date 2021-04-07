@@ -34,30 +34,36 @@ export class UserModule extends Module {
 
 		try {
 			// Check if email and password are not undefined
-			if (email && password) {
-				const user = await User.authenticate(email as string, password as string)
-
-				// Check if there is user
-				if (user) {
-					// Hide user password before sending it to the client
-					user.password = '********'
-
-					req.session.user = user
-					res.json({ message: 'success', user: user.toJSON() })
-				} else {
-					// No user found --> Error: Invalid credentials
-					res.json({
-						error: 'Invalid credentials',
-						message: 'No user matching the given credentials'
-					})
-				}
-			} else {
+			if (!email || !password) {
 				// No email or password --> Error: Missing arguments
 				res.json({
 					error: 'Missing arguments',
 					message: 'Missing one or many of the following parameters: email,password'
 				})
+
+				return res.end()
 			}
+
+			const user = await User.authenticate(email as string, password as string)
+
+			// Check if there is user
+			if (!user) {
+				// No user found --> Error: Invalid credentials
+				res.json({
+					error: 'Invalid credentials',
+					message: 'No user matching the given credentials'
+				})
+
+				return res.end()
+			}
+
+			// Hide user password before sending it to the client
+			user.password = '********'
+
+			req.session.user = user
+			res.json({ message: 'success', user: user.toJSON() })
+
+			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
 			res.json({
@@ -65,9 +71,9 @@ export class UserModule extends Module {
 				message: 'Something went wrong',
 				details: error
 			})
-		}
 
-		return res.end()
+			return res.end()
+		}
 	}
 
 	/**
@@ -152,24 +158,28 @@ export class UserModule extends Module {
 
 		try {
 			// Check if the token is not undefined
-			if (token) {
-				// Get the user thanks to the ID store in the payload
-				const payload: UserJWTPayload = verify(token as string, config.security.secret) as UserJWTPayload
-				const user = await User.findById(payload.userId)
-
-				if (user) {
-					// Unset the token and save
-					user.token = null
-					await user.save()
-
-					res.json({ message: 'success', disconnected: true })
-				}
-			} else {
+			if (!token) {
 				// No token --> Error: Missing arguments
 				res.json({
 					error: 'Missing arguments',
 					message: 'Missing one or many of the following parameters: token'
 				})
+
+				return res.end()
+			}
+
+			// Get the user thanks to the ID store in the payload
+			const payload: UserJWTPayload = verify(token as string, config.security.secret) as UserJWTPayload
+			const user = await User.findById(payload.userId)
+
+			if (user) {
+				// Unset the token and save
+				user.token = null
+				await user.save()
+
+				res.json({ message: 'success', disconnected: true })
+
+				return res.end()
 			}
 		} catch (error) {
 			// Error caught --> Something went wrong
@@ -178,8 +188,8 @@ export class UserModule extends Module {
 				message: 'Something went wrong',
 				details: error
 			})
-		}
 
-		return res.end()
+			return res.end()
+		}
 	}
 }

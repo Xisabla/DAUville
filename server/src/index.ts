@@ -1,12 +1,12 @@
-import express from 'express'
-import path from 'path'
+import config from './config'
+import { Application } from './core/'
+import { UserModule } from './modules'
 
-const app = express()
-const port = 3000
-const publicPath = path.resolve('../client/public')
+// ---- App ------------------------------------------------------------------------------
+const app = new Application({ ...config.app, ...{ db: config.db } })
 
-app.use(express.static(publicPath))
+// Register modules
+app.registerModule(UserModule)
 
-app.listen(port, () => {
-	console.log(`Listening to http://localhost:${port}`)
-})
+// Run the server
+app.run()

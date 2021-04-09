@@ -60,8 +60,12 @@ export class MeasureModule extends Module {
 	 * @returns The new records
 	 */
 	public async updateMyFoodRecords(): Promise<IMeasureSchema[]> {
+		this._log('Fetching myfood API...')
+
 		const response = await axios('https://hub.myfood.eu/opendata/productionunits/29/measures')
 		const records = response.data as Array<SensorRecord>
+
+		this._log(`myfood API: Got ${records.length} records`)
 
 		// Get the 6 first elements to get the last records (6 = number of different sensors)
 		const measures = records.slice(0, 6).map(
@@ -86,15 +90,14 @@ export class MeasureModule extends Module {
 			)
 		).filter((measure) => measure)
 
+		this._log(`Filtered ${unregisteredMeasures.length} new measure(s), sending to sockets`)
+
 		// Save measures and map them to JSON
 		const savedMeasures = await Promise.all(unregisteredMeasures.map(async (measure) => await measure.save()))
 
 		// Send measures to the connected clients
 		this._sockets.forEach((socket) => {
-			socket.emit(
-				'updateMyFoodRecords',
-				savedMeasures.map((measure) => measure.toJSON())
-			)
+			socket.emit('updateMyFoodRecords', { measures: savedMeasures.map((measure) => measure.toJSON()) })
 		})
 
 		return savedMeasures

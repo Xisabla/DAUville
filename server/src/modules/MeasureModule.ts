@@ -86,8 +86,18 @@ export class MeasureModule extends Module {
 			)
 		).filter((measure) => measure)
 
-		// TODO: Notify sockets with all measures instead of stopping here
-		return Promise.all(unregisteredMeasures.map(async (measure) => await measure.save()))
+		// Save measures and map them to JSON
+		const savedMeasures = await Promise.all(unregisteredMeasures.map(async (measure) => await measure.save()))
+
+		// Send measures to the connected clients
+		this._sockets.forEach((socket) => {
+			socket.emit(
+				'updateMyFoodRecords',
+				savedMeasures.map((measure) => measure.toJSON())
+			)
+		})
+
+		return savedMeasures
 	}
 
 	/**

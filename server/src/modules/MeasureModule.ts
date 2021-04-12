@@ -60,47 +60,55 @@ export class MeasureModule extends Module {
 	 * @returns The new records
 	 */
 	public async updateMyFoodRecords(): Promise<IMeasureSchema[]> {
+		// NOTE: This is temporarily hardcoded, this value should be editable by an administrator user (or from a config file or whatever)
+		// NOTE²: Serre ISA Lille: 29 - Serre de test (Brest): 191
+		const greenhouseId = 191
+
 		this._log('Fetching myfood API...')
 
-		const response = await axios('https://hub.myfood.eu/opendata/productionunits/29/measures')
-		const records = response.data as Array<SensorRecord>
+		try {
+			const response = await axios(`https://hub.myfood.eu/opendata/productionunits/${greenhouseId}/measures`)
+			const records = response.data as Array<SensorRecord>
 
-		this._log(`myfood API: Got ${records.length} records`)
+			this._log(`myfood API: Got ${records.length} records`)
 
-		// Get the 6 first elements to get the last records (6 = number of different sensors)
-		const measures = records.slice(0, 6).map(
-			(measure) =>
-				new Measure({
-					captureDate: moment(measure.captureDate).toDate(),
-					value: measure.value,
-					sensor: this.getSensorByName(measure.sensor)
-				})
-		)
-
-		// Filter to get only measures that are not already in the database
-		// Filters with async methods need a small trick "Promise.all", "map" and "filter": https://stackoverflow.com/a/46842181
-		const unregisteredMeasures = (
-			await Promise.all(
-				measures.map(async (measure) => {
-					const { captureDate, value, sensor } = measure
-					const same = await Measure.findOne({ captureDate, sensor, value })
-
-					return same ? null : measure
-				})
+			// Get the 6 first elements to get the last records (6 = number of different sensors)
+			const measures = records.slice(0, 6).map(
+				(measure) =>
+					new Measure({
+						captureDate: moment.utc(measure.captureDate).toDate(),
+						value: measure.value,
+						sensor: this.getSensorByName(measure.sensor)
+					})
 			)
-		).filter((measure) => measure)
 
-		this._log(`Filtered ${unregisteredMeasures.length} new measure(s), sending to sockets`)
+			// Filter to get only measures that are not already in the database
+			// Filters with async methods need a small trick "Promise.all", "map" and "filter": https://stackoverflow.com/a/46842181
+			const unregisteredMeasures = (
+				await Promise.all(
+					measures.map(async (measure) => {
+						const { captureDate, value, sensor } = measure
+						const same = await Measure.findOne({ captureDate, sensor, value })
 
-		// Save measures and map them to JSON
-		const savedMeasures = await Promise.all(unregisteredMeasures.map(async (measure) => await measure.save()))
+						return same ? null : measure
+					})
+				)
+			).filter((measure) => measure)
 
-		// Send measures to the connected clients
-		this._sockets.forEach((socket) => {
-			socket.emit('updateMyFoodRecords', { measures: savedMeasures.map((measure) => measure.toJSON()) })
-		})
+			this._log(`Filtered ${unregisteredMeasures.length} new measure(s), sending to sockets`)
 
-		return savedMeasures
+			// Save measures and map them to JSON
+			const savedMeasures = await Promise.all(unregisteredMeasures.map(async (measure) => await measure.save()))
+
+			// Send measures to the connected clients
+			this._sockets.forEach((socket) => {
+				socket.emit('updateMyFoodRecords', { measures: savedMeasures.map((measure) => measure.toJSON()) })
+			})
+
+			return savedMeasures
+		} catch (error) {
+			this._log(`An error happened while fetching MyFood API: ${error}`)
+		}
 	}
 
 	/**
@@ -109,7 +117,7 @@ export class MeasureModule extends Module {
 	public async getMyFoodMeasuresHandler(req: Request, res: Response): Promise<void> {
 		try {
 			// Get latest mesures (from now - 10 minutes)
-			const minimumDate = moment().add(-10, 'minutes').toDate()
+			const minimumDate = moment.utc().add(-10, 'minutes').toDate()
 			const measures = await Measure.find({ captureDate: { $gte: minimumDate } })
 
 			// Check for valid mesures

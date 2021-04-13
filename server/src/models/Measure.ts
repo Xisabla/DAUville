@@ -18,18 +18,18 @@ interface SensorRecord {
  * Sensor that recorded the measure
  */
 export const enum Sensor {
-	Ph,
-	Humidity,
-	AirTemperature,
-	WaterTemperature,
-	ExternalAirHumidity,
-	ExternalAirTemperature
+	Ph = 'pH',
+	Humidity = 'Humidity',
+	AirTemperature = 'Air Temperature',
+	WaterTemperature = 'Water Temperature',
+	ExternalAirHumidity = 'External Air Humidity',
+	ExternalAirTemperature = 'External Air Temperature'
 }
 
 // ---- Schema interface -----------------------------------------------------------------
 export interface IMeasureSchema extends Document {
 	/** Sensor the recorded the measure */
-	sensor: number
+	sensor: string
 	/** Date and time of the measure record */
 	captureDate: Date
 	/** Value of the measure (unit not given) */
@@ -39,7 +39,7 @@ export interface IMeasureSchema extends Document {
 // ---- Schema ---------------------------------------------------------------------------
 export const MeasureSchema = new Schema<IMeasureSchema, Model<IMeasureSchema>>(
 	{
-		sensor: { type: Number, required: true },
+		sensor: { type: String, required: true },
 		captureDate: { type: Date, required: true },
 		value: { type: Number, required: true }
 	},

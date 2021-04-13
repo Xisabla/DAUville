@@ -44,6 +44,16 @@ export interface AppOptions {
 		/** Database name */
 		dbname?: string
 	}
+	/** Should the application wait for the module ? (Overwrites Module settings, null = let the Module choose) */
+	waitForModuleInit?: boolean
+}
+
+/**
+ * Options for the Module Registering method
+ */
+export interface ModuleRegisteringOptions {
+	/** Should the application wait for the module ? (Overwrites Module settings) */
+	wait?: boolean
 }
 
 // ---- Application ----------------------------------------------------------------------
@@ -56,7 +66,7 @@ export class Application {
 
 	// Options
 	/* Given options */
-	private _options: AppOptions
+	private readonly _options: AppOptions
 	/* Public path */
 	private _public: string | null
 	/* Port */
@@ -88,6 +98,7 @@ export class Application {
 
 	constructor(options: AppOptions = {}) {
 		// Read options
+		this._options = options
 		this._public = path.resolve(options.public) ?? null
 		log(this._public ? `Public path set on ${this._public}` : 'No public path')
 
@@ -174,13 +185,20 @@ export class Application {
 	 * @param moduleClass Class of the module to register
 	 * @returns The instance of the module
 	 */
-	public async registerModule(moduleClass: Instantiable<Module>): Promise<Module> {
+	public async registerModule(
+		moduleClass: Instantiable<Module>,
+		options: ModuleRegisteringOptions = {}
+	): Promise<Module> {
 		const { _app: app } = this
 
 		// As modules might need to access the database, we make sure that the connection is set before instantiating it
 		await this._dbConnectionPromise
 
 		const module = new moduleClass(this)
+
+		// Set wait flag (if necessary)
+		if (this._options.waitForModuleInit !== null && this._options.waitForModuleInit !== undefined) module.setWait(this._options.waitForModuleInit)
+		if (options.wait !== null && options.wait !== undefined) module.setWait(options.wait)
 
 		this._modules.push(module)
 		this._endpoints.addMany(module.endpoints)
@@ -307,6 +325,14 @@ export class Application {
 	// ---- Running ----------------------------------------------------------------------
 
 	/**
+	 *
+	 * @returns The Promises results of the init methods of all modules that have the wait flag at true
+	 */
+	private async ensureModulesInit(): Promise<any[]> {
+		return await Promise.all(this._modules.filter((module) => module.wait).map((module) => module.initPromise))
+	}
+
+	/**
 	 * Start the server
 	 * @returns The instance of the HTTP server
 	 */
@@ -319,6 +345,7 @@ export class Application {
 
 		// Wait for db connection
 		await this._dbConnectionPromise
+		await this.ensureModulesInit()
 
 		// Start the server
 		return server.listen(port, () => {

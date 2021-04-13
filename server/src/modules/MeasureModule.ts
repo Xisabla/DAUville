@@ -19,14 +19,12 @@ export class MeasureModule extends Module {
 				handle: this.getMyFoodMeasuresHandler.bind(this)
 			}
 		])
-
-		this.init()
 	}
 
 	/**
 	 * Get all the reachable unregistered records from MyFood API and save them to the database
 	 */
-	private async init(): Promise<void> {
+	protected async init(): Promise<any> {
 		this._log(`Initalizing module entries in the database...`)
 
 		// NOTE: This is temporarily hardcoded, this value should be editable by an administrator user (or from a config file or whatever)
@@ -38,9 +36,11 @@ export class MeasureModule extends Module {
 			const records = await Measure.fetchUnregisteredRecords(greenhouseId)
 
 			// Save the records
-			await Promise.all(records.map(async (measure) => await measure.save()))
+			const saved = await Promise.all(records.map(async (measure) => await measure.save()))
 
 			this._log(`Saved ${records.length} new record(s)`)
+
+			return saved
 		} catch (error) {
 			this._log(`An error happened while fetching MyFood API: ${error}`)
 		}

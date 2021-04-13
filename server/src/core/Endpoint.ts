@@ -65,6 +65,10 @@ export type Endpoint = HTTPEndpoint | SocketEndpoint
 export class EndpointList {
 	private _endpoints: Endpoint[]
 
+	/**
+	 * List of endpoints with specific methods
+	 * @param endpoints Endpoints
+	 */
 	constructor(...endpoints: Endpoint[]) {
 		this._endpoints = endpoints ?? []
 	}
@@ -73,7 +77,7 @@ export class EndpointList {
 	 * Add an endpoint to the endpoint list
 	 * @param endpoint Endpoint to add
 	 */
-	public add(endpoint: Endpoint) {
+	public add(endpoint: Endpoint): void {
 		this._endpoints.push(endpoint)
 	}
 
@@ -81,7 +85,7 @@ export class EndpointList {
 	 * Add multiple endpoints to the endpoint list
 	 * @param endpoints Endpoints to add
 	 */
-	public addMany(endpoints: Endpoint[]) {
+	public addMany(endpoints: Endpoint[]): void {
 		this._endpoints = [...this._endpoints, ...endpoints]
 	}
 
@@ -91,7 +95,7 @@ export class EndpointList {
 	 * @param path Path to check
 	 * @returns True if the path matchs the endpoint
 	 */
-	public static isPathMatching(endpoint: Endpoint, path: EndpointPath) {
+	public static isPathMatching(endpoint: Endpoint, path: EndpointPath): boolean {
 		// TODO: Check for wildcards and all the stuff instead of this:
 		return endpoint.path.toUpperCase() === path.toUpperCase()
 	}
@@ -101,7 +105,7 @@ export class EndpointList {
 	 * @param selector Path that has to match the endpoint and (facultative) type of the endpoint
 	 * @returns All the matching endpoints
 	 */
-	public find(selector: { path: EndpointPath; type?: EndpointType }) {
+	public find(selector: { path: EndpointPath; type?: EndpointType }): Endpoint[] {
 		const { path, type } = selector
 		const endpoints = type ? this._endpoints.filter((endpoint) => endpoint.type === type) : this._endpoints
 

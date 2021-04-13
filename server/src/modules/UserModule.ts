@@ -16,6 +16,10 @@ declare module 'express-session' {
 
 // ---- Module ---------------------------------------------------------------------------
 export class UserModule extends Module {
+	/**
+	 * Allow user login, logout and registering
+	 * @param app Application
+	 */
 	constructor(app: Application) {
 		super(app, 'UserModule')
 

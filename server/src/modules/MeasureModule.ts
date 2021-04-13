@@ -6,6 +6,10 @@ import { IMeasureSchema, Measure, Sensor } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class MeasureModule extends Module {
+	/**
+	 * Allow measures fetching and allow the client to ask for the measures
+	 * @param app Application
+	 */
 	constructor(app: Application) {
 		super(app, 'MeasureModule')
 

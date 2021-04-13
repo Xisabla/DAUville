@@ -10,9 +10,9 @@ export abstract class Module {
 	// ---- Attributes -------------------------------------------------------------------
 
 	/** Module ID */
-	private readonly _id: number
+	protected readonly _id: number
 	/** Application instance */
-	private readonly _app: Application
+	protected readonly _app: Application
 	/** Module logger */
 	protected readonly _log: Debugger
 	/** Connected sockets */
@@ -76,7 +76,7 @@ export abstract class Module {
 	 * 	to wait to be over before starting
 	 * @returns A promise of the async process
 	 */
-	private async init(): Promise<any> {
+	protected async init(): Promise<any> {
 		return Promise.resolve()
 	}
 

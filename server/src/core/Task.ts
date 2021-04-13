@@ -7,6 +7,9 @@ import { Module } from './Module'
 export type TaskAction = (task: Task) => Promise<any>
 export type TaskSchedule = string | Moment | Date
 
+/**
+ * Description of a Task
+ */
 export interface TaskOptions {
 	/** Module of the task, null or empty if orphan */
 	origin?: Module
@@ -20,24 +23,28 @@ export interface TaskOptions {
 
 export class Task {
 	/** Task ID */
-	private _id: number
+	protected readonly _id: number
 	/** Task origin object */
-	private _origin: Module | null
+	protected readonly _origin: Module | null
 	/** Task logger */
 	protected readonly _log: Debugger
 
 	/** Inter job that will trigger the action (actual task) */
-	private _job: CronJob
+	protected _job: CronJob
 	/** Action to run on job triggered */
-	private _action: TaskAction
+	protected readonly _action: TaskAction
 	/** Last task run */
-	private _lastCall: Moment | null
+	protected _lastCall: Moment | null
 
 	/** ID counter */
 	private static _counter = 0
 	/** Task pool */
 	private static _pool: Task[] = []
 
+	/**
+	 * Cron task handled by Modules
+	 * @param task Description of the task
+	 */
 	constructor(task: TaskOptions) {
 		this._id = Task._counter++
 
@@ -62,7 +69,7 @@ export class Task {
 	/**
 	 * Enable the task
 	 */
-	public start() {
+	public start(): void {
 		this._job.start()
 		this._log(`Job started, next call: ${this.nextCall}`)
 	}

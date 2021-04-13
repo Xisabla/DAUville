@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import moment from 'moment'
 
 import { Application, Module } from '../core'
-import { IMeasureSchema, Measure, Sensor } from '../models/Measure'
+import { IMeasureSchema, Measure, Sensor } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class MeasureModule extends Module {

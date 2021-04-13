@@ -4,7 +4,7 @@ import { verify } from 'jsonwebtoken'
 import config from '../config'
 import { Application, Module } from '../core'
 import { IUserSchema, User } from '../models'
-import { UserJWTPayload } from '../models/User'
+import { UserJWTPayload } from '../models'
 
 // NOTE: Small tweak to define possible session content from express
 // See https://stackoverflow.com/a/65696437

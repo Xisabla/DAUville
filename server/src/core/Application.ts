@@ -44,6 +44,16 @@ export interface AppOptions {
 		/** Database name */
 		dbname?: string
 	}
+	/** Should the application wait for the module ? (Overwrites Module settings, null = let the Module choose) */
+	waitForModuleInit?: boolean
+}
+
+/**
+ * Options for the Module Registering method
+ */
+export interface ModuleRegisteringOptions {
+	/** Should the application wait for the module ? (Overwrites Module settings) */
+	wait?: boolean
 }
 
 // ---- Application ----------------------------------------------------------------------
@@ -56,38 +66,43 @@ export class Application {
 
 	// Options
 	/* Given options */
-	private _options: AppOptions
+	protected readonly _options: AppOptions
 	/* Public path */
-	private _public: string | null
+	protected readonly _public: string | null
 	/* Port */
-	private _port: number
+	protected readonly _port: number
 
 	// Server
 	/** Express application */
-	private _app: express.Application
+	protected readonly _app: express.Application
 	/** HTTP server from express */
-	private _server: http.Server
+	protected readonly _server: http.Server
 	/** SocketIO server */
-	private _io: SocketIO.Server
+	protected readonly _io: SocketIO.Server
 
 	// Database
 	/** Database asynchronous connection promise */
-	private _dbConnectionPromise: Promise<Mongoose | null>
+	protected _dbConnectionPromise: Promise<Mongoose | null>
 	/** Application database instance */
-	private _db?: Mongoose
+	protected _db?: Mongoose
 
 	// Modules
 	/** Registered modules */
-	private _modules: Module[]
+	protected _modules: Module[]
 	/** Connected sockets */
-	private _sockets: Socket[]
+	protected _sockets: Socket[]
 	/** Registered endpoints */
-	private _endpoints: EndpointList
+	protected _endpoints: EndpointList
 
 	// ---- Configuration ----------------------------------------------------------------
 
+	/**
+	 * Application object that handle the main working process of the project
+	 * @param options Options of the Application
+	 */
 	constructor(options: AppOptions = {}) {
 		// Read options
+		this._options = options
 		this._public = path.resolve(options.public) ?? null
 		log(this._public ? `Public path set on ${this._public}` : 'No public path')
 
@@ -174,13 +189,21 @@ export class Application {
 	 * @param moduleClass Class of the module to register
 	 * @returns The instance of the module
 	 */
-	public async registerModule(moduleClass: Instantiable<Module>): Promise<Module> {
+	public async registerModule(
+		moduleClass: Instantiable<Module>,
+		options: ModuleRegisteringOptions = {}
+	): Promise<Module> {
 		const { _app: app } = this
 
 		// As modules might need to access the database, we make sure that the connection is set before instantiating it
 		await this._dbConnectionPromise
 
 		const module = new moduleClass(this)
+
+		// Set wait flag (if necessary)
+		if (this._options.waitForModuleInit !== null && this._options.waitForModuleInit !== undefined)
+			module.setWait(this._options.waitForModuleInit)
+		if (options.wait !== null && options.wait !== undefined) module.setWait(options.wait)
 
 		this._modules.push(module)
 		this._endpoints.addMany(module.endpoints)
@@ -227,7 +250,7 @@ export class Application {
 	 * @param type Endpoint type to match
 	 * @returns The endpoint if one is found, otherwise null
 	 */
-	private getEndpoint(path: EndpointPath, type: EndpointType): Endpoint | null {
+	public getEndpoint(path: EndpointPath, type: EndpointType): Endpoint | null {
 		const endpoints = this._endpoints.find({ path, type })
 
 		return endpoints.length > 0 ? endpoints[endpoints.length - 1] : null
@@ -307,6 +330,13 @@ export class Application {
 	// ---- Running ----------------------------------------------------------------------
 
 	/**
+	 * @returns The Promises results of the init methods of all modules that have the wait flag at true
+	 */
+	private async ensureModulesInit(): Promise<any[]> {
+		return await Promise.all(this._modules.filter((module) => module.wait).map((module) => module.initPromise))
+	}
+
+	/**
 	 * Start the server
 	 * @returns The instance of the HTTP server
 	 */
@@ -319,6 +349,7 @@ export class Application {
 
 		// Wait for db connection
 		await this._dbConnectionPromise
+		await this.ensureModulesInit()
 
 		// Start the server
 		return server.listen(port, () => {

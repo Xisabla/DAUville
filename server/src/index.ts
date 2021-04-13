@@ -1,7 +1,12 @@
 import config from './config'
 import { Application } from './core/'
-import { UserModule } from './modules'
-import { MeasureModule } from './modules/MeasureModule'
+import { MeasureModule, UserModule } from './modules'
+
+// ---- Package exports ------------------------------------------------------------------
+export * from './config'
+export * from './core'
+export * from './models'
+export * from './modules'
 
 // ---- App ------------------------------------------------------------------------------
 const app = new Application({ ...config.app, ...{ db: config.db } })

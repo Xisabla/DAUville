@@ -121,3 +121,6 @@ dist
 
 # Documentation
 doc/
+
+# Local TODO file
+TODO

@@ -1,23 +1,15 @@
-import axios from 'axios'
 import { Request, Response } from 'express'
 import moment from 'moment'
 
 import { Application, Module } from '../core'
-import { IMeasureSchema, Measure, Sensor } from '../models/Measure'
-
-// ---- Interfaces -----------------------------------------------------------------------
-interface SensorRecord {
-	sensor: string
-	captureDate: string
-	value: number
-}
+import { IMeasureSchema, Measure } from '../models/Measure'
 
 // ---- Module ---------------------------------------------------------------------------
 export class MeasureModule extends Module {
 	constructor(app: Application) {
 		super(app, 'MeasureModule')
 
-		this.registerTask('0 */10 * * * *', this.updateMyFoodRecords.bind(this))
+		this.registerTask('0 */10 * * * *', this.updateMyFoodMeasures.bind(this))
 
 		this.addEndpoint({
 			type: 'HTTP',
@@ -26,88 +18,60 @@ export class MeasureModule extends Module {
 			handle: this.getMyFoodMeasuresHandler.bind(this)
 		})
 
-		// Get current last values at initialization to ensure that the database is not empty when the server starts
-		this.updateMyFoodRecords()
+		this.init()
 	}
 
 	/**
-	 * Get the sensor type by it's name
-	 * @param sensorName Sensor name
-	 * @returns Sensor type
+	 * Get all the reachable unregistered records from MyFood API and save them to the database
 	 */
-	private getSensorByName(sensorName: string): Sensor {
-		switch (sensorName) {
-			case 'pH Sensor':
-				return Sensor.Ph
-			case 'Water Temperature Sensor':
-				return Sensor.WaterTemperature
-			case 'Air Temperature Sensor':
-				return Sensor.AirTemperature
-			case 'Air Humidity Sensor':
-				return Sensor.Humidity
-			case 'External Air Humidity':
-				return Sensor.ExternalAirHumidity
-			case 'External Air Temperature':
-				return Sensor.ExternalAirTemperature
-		}
+	private async init(): Promise<void> {
+		this._log(`Initalizing module entries in the database...`)
 
-		// By default, return the element for index 0
-		return Sensor.Ph
+		// NOTE: This is temporarily hardcoded, this value should be editable by an administrator user (or from a config file or whatever)
+		// NOTE²: Serre ISA Lille: 29 - Serre de test (Brest): 191
+		const greenhouseId = 191
+
+		try {
+			// Fetch records that are not already in the database
+			const records = await Measure.fetchUnregisteredRecords(greenhouseId)
+
+			// Save the records
+			await Promise.all(records.map(async (measure) => await measure.save()))
+
+			this._log(`Saved ${records.length} new record(s)`)
+		} catch (error) {
+			this._log(`An error happened while fetching MyFood API: ${error}`)
+		}
 	}
 
 	/**
 	 * Fetch the MyFood public API to get the latest sensor records, store them in the database, and notify the new values to the users through sockets
 	 * @returns The new records
 	 */
-	public async updateMyFoodRecords(): Promise<IMeasureSchema[]> {
+	public async updateMyFoodMeasures(): Promise<IMeasureSchema[]> {
 		// NOTE: This is temporarily hardcoded, this value should be editable by an administrator user (or from a config file or whatever)
 		// NOTE²: Serre ISA Lille: 29 - Serre de test (Brest): 191
 		const greenhouseId = 191
 
-		this._log('Fetching myfood API...')
+		this._log('Updating myfood measures')
 
 		try {
-			const response = await axios(`https://hub.myfood.eu/opendata/productionunits/${greenhouseId}/measures`)
-			const records = response.data as Array<SensorRecord>
+			// Fetch the last 6 records that are not already in the database (6 records because there are 6 sensors)
+			const records = await Measure.fetchUnregisteredRecords(greenhouseId, 6)
 
-			this._log(`myfood API: Got ${records.length} records`)
+			this._log(`Got ${records.length}, sending to sockets`)
 
-			// Get the 6 first elements to get the last records (6 = number of different sensors)
-			const measures = records.slice(0, 6).map(
-				(measure) =>
-					new Measure({
-						captureDate: moment.utc(measure.captureDate).toDate(),
-						value: measure.value,
-						sensor: this.getSensorByName(measure.sensor)
-					})
-			)
+			// Save the records
+			const measures = await Promise.all(records.map(async (record) => await record.save()))
 
-			// Filter to get only measures that are not already in the database
-			// Filters with async methods need a small trick "Promise.all", "map" and "filter": https://stackoverflow.com/a/46842181
-			const unregisteredMeasures = (
-				await Promise.all(
-					measures.map(async (measure) => {
-						const { captureDate, value, sensor } = measure
-						const same = await Measure.findOne({ captureDate, sensor, value })
-
-						return same ? null : measure
-					})
-				)
-			).filter((measure) => measure)
-
-			this._log(`Filtered ${unregisteredMeasures.length} new measure(s), sending to sockets`)
-
-			// Save measures and map them to JSON
-			const savedMeasures = await Promise.all(unregisteredMeasures.map(async (measure) => await measure.save()))
-
-			// Send measures to the connected clients
+			// Send the records to the users through sockets
 			this._sockets.forEach((socket) => {
-				socket.emit('updateMyFoodRecords', { measures: savedMeasures.map((measure) => measure.toJSON()) })
+				socket.emit('updateMyFoodMeasures', { measures: measures.map((measure) => measure.toJSON()) })
 			})
 
-			return savedMeasures
+			return measures
 		} catch (error) {
-			this._log(`An error happened while fetching MyFood API: ${error}`)
+			this._log(`An error happened while updating MyFood measures: ${error}`)
 		}
 	}
 

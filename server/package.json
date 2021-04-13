@@ -5,7 +5,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production DEBUG=core:Application node ./",
     "build": "tsc",
-    "dev": "cross-env NODE_ENV=development DEBUG=core:*,module:*,task:* ts-node-dev src/index.ts",
+    "dev": "cross-env NODE_ENV=development DEBUG=core:*,model:*,module:*,task:* ts-node-dev src/index.ts",
     "clean": "rimraf ./dist ./coverage",
     "lint": "eslint ./ --fix",
     "prebuild": "npm run lint",

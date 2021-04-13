@@ -82,7 +82,7 @@ export class MeasureModule extends Module {
 		try {
 			// Get latest mesures (from now - 10 minutes)
 			const minimumDate = moment.utc().add(-10, 'minutes').toDate()
-			const measures = await Measure.find({ captureDate: { $gte: minimumDate } })
+			const measures = await Measure.find({ captureDate: { $gte: minimumDate } }).sort({ sensor: 1 })
 
 			// Check for valid mesures
 			if (!measures || measures.length === 0) {

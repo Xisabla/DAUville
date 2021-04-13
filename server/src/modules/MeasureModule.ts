@@ -157,8 +157,6 @@ export class MeasureModule extends Module {
 			// Measures query limit (-1 all), default: sensors count
 			const limit = query.limit ? parseInt(query.limit as string, 10) : sensors.length
 
-			console.log(since, until, sensors, sort, limit)
-
 			// Build the base query
 			const measuresQuery = Measure.find({
 				captureDate: {

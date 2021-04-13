@@ -201,7 +201,8 @@ export class Application {
 		const module = new moduleClass(this)
 
 		// Set wait flag (if necessary)
-		if (this._options.waitForModuleInit !== null && this._options.waitForModuleInit !== undefined) module.setWait(this._options.waitForModuleInit)
+		if (this._options.waitForModuleInit !== null && this._options.waitForModuleInit !== undefined)
+			module.setWait(this._options.waitForModuleInit)
 		if (options.wait !== null && options.wait !== undefined) module.setWait(options.wait)
 
 		this._modules.push(module)

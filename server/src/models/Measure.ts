@@ -18,12 +18,12 @@ interface SensorRecord {
  * Sensor that recorded the measure
  */
 export const enum Sensor {
-	Ph = 'pH',
-	Humidity = 'Humidity',
-	AirTemperature = 'Air Temperature',
-	WaterTemperature = 'Water Temperature',
-	ExternalAirHumidity = 'External Air Humidity',
-	ExternalAirTemperature = 'External Air Temperature'
+	Ph = 'ph',
+	Humidity = 'humidity',
+	AirTemperature = 'air temperature',
+	WaterTemperature = 'water temperature',
+	ExternalAirHumidity = 'external air humidity',
+	ExternalAirTemperature = 'external air temperature'
 }
 
 // ---- Schema interface -----------------------------------------------------------------
@@ -138,18 +138,25 @@ MeasureSchema.statics.filterUnregisteredRecords = async function (
  * @returns Sensor type
  */
 MeasureSchema.statics.getSensorByName = function (sensorName: string): Sensor {
-	switch (sensorName) {
-		case 'pH Sensor':
+	switch (sensorName.toLowerCase()) {
+		case 'ph sensor':
+		case 'ph':
 			return Sensor.Ph
-		case 'Water Temperature Sensor':
+		case 'water temperature sensor':
+		case 'water temperature':
 			return Sensor.WaterTemperature
-		case 'Air Temperature Sensor':
+		case 'air temperature sensor':
+		case 'air temperature':
 			return Sensor.AirTemperature
-		case 'Air Humidity Sensor':
+		case 'air humidity sensor':
+		case 'air humidity':
+		case 'humidity':
 			return Sensor.Humidity
-		case 'External Air Humidity':
+		case 'external air humidity sensor':
+		case 'external air humidity':
 			return Sensor.ExternalAirHumidity
-		case 'External Air Temperature':
+		case 'external air temperature sensor':
+		case 'external air temperature':
 			return Sensor.ExternalAirTemperature
 	}
 

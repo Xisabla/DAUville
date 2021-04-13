@@ -16,7 +16,7 @@ export abstract class Module {
 	/** Module logger */
 	protected readonly _log: Debugger
 	/** Connected sockets */
-	private _sockets: Socket[]
+	protected _sockets: Socket[]
 	/** Module endpoints */
 	private _endpoints: Endpoint[]
 

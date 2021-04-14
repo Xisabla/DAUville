@@ -37,7 +37,7 @@ export type IORUnit = Model<IORUnitSchema>
  * Fill the unit with empty elements
  */
 ORUnitSchema.methods.fill = function (): void {
-	for (let i = 0; i < this.slots; i++) {
+	while (this.elements.length < this.slots) {
 		this.elements.push(new ORElement({ value: null, comment: null }))
 	}
 }

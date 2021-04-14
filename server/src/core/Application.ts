@@ -5,6 +5,7 @@ import session from 'express-session'
 import http from 'http'
 import memorystore from 'memorystore'
 import mongoose, { Mongoose } from 'mongoose'
+import morgan from 'morgan'
 import path from 'path'
 import SocketIO, { Socket } from 'socket.io'
 
@@ -116,6 +117,7 @@ export class Application {
 
 		// Initialize server
 		this._app = express()
+		this._app.use(morgan(process.env.NODE_ENV === 'development' ? 'dev' : 'combined'))
 		this._app.use(urlencoded({ extended: true }))
 		this._app.use(
 			session({

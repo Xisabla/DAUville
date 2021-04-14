@@ -166,6 +166,8 @@ export class OccupancyRateModule extends Module {
 
 			const unit = new ORUnit({ name, slots })
 
+			unit.fill()
+
 			if (groupIndex > 0) module.units[groupIndex].push(unit)
 			else module.units.push([unit])
 

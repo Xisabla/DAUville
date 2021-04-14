@@ -1,7 +1,7 @@
 import { model } from 'mongoose'
 import { Document, Model, Schema } from 'mongoose'
 
-import { IORElementSchema, ORElementSchema } from './ORElement'
+import { IORElementSchema, ORElement, ORElementSchema } from './ORElement'
 
 // ---- Schema interface -----------------------------------------------------------------
 export interface IORUnitSchema extends Document {
@@ -13,6 +13,8 @@ export interface IORUnitSchema extends Document {
 	elements: IORElementSchema[]
 
 	// Methods
+	/** Fill the unit with empty elements */
+	fill(): void
 	/** Check if the units elements doesn't exceed the slot count */
 	validateSlots(): boolean
 }
@@ -31,6 +33,15 @@ export const ORUnitSchema = new Schema<IORUnitSchema, Model<IORUnitSchema>>(
 export type IORUnit = Model<IORUnitSchema>
 
 // ---- Methods --------------------------------------------------------------------------
+/**
+ * Fill the unit with empty elements
+ */
+ORUnitSchema.methods.fill = function (): void {
+	for (let i = 0; i < this.slots; i++) {
+		this.elements.push(new ORElement({ value: null, comment: null }))
+	}
+}
+
 /**
  * Check if the units elements doesn't exceed the slot count
  * @returns false if the count exceeds, false otherwise

@@ -4,15 +4,15 @@ import { Document, Model, Schema } from 'mongoose'
 // ---- Schema interface -----------------------------------------------------------------
 export interface IORElementSchema extends Document {
 	/** Value of the element (eg: "celery") */
-	value: string
+	value: string | null
 	/** Comment about the element (eg: "for Dôme association") */
-	comment: string
+	comment: string | null
 }
 
 // ---- Schema ---------------------------------------------------------------------------
 export const ORElementSchema = new Schema<IORElementSchema, Model<IORElementSchema>>(
 	{
-		value: { type: String, required: true },
+		value: String,
 		comment: String
 	},
 	{ collection: 'occupancy-rate-elements', timestamps: true }

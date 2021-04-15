@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 
 import { Application, Module } from '../core'
+import { ORElement } from '../models/ORElement'
 import { IORModuleSchema, ORModule } from '../models/ORModule'
 import { ORUnit } from '../models/ORUnit'
 
@@ -20,9 +21,12 @@ export class OccupancyRateModule extends Module {
 			{ type: 'HTTP', method: 'GET', path: '/getOCModules', handle: this.getModulesHandler.bind(this) },
 			{ type: 'HTTP', method: 'POST', path: '/addOCUnit', handle: this.addUnitHandler.bind(this) },
 			{ type: 'HTTP', method: 'PUT', path: '/moveOCUnit', handle: this.moveUnitHandler.bind(this) },
-			{ type: 'HTTP', method: 'PUT', path: '/changeOCUnitSlots', handle: this.changeUnitSlotsHandler.bind(this) }
+			{ type: 'HTTP', method: 'PUT', path: '/changeOCUnitSlots', handle: this.changeUnitSlotsHandler.bind(this) },
+			{ type: 'HTTP', method: 'DELETE', path: '/removeOCUnit', handle: this.removeUnitHandler.bind(this) },
+			{ type: 'HTTP', method: 'PUT', path: '/editOCElement', handle: this.editElementHandler.bind(this) }
 		])
 
+		// TODO: Add examples/description of the route for all endpoints
 		/**
 		 * Endpoints:
 		 * (GET) 	- /getModule?name=<name>
@@ -417,7 +421,195 @@ export class OccupancyRateModule extends Module {
 		}
 	}
 
-	/*public async removeUnitHandler(req: Request, res: Response): Promise<void> {}
+	/**
+	 * Handle /removeOCUnit DELETE route: Remove a unit if there are only empty elements inside
+	 */
+	public async removeUnitHandler(req: Request, res: Response): Promise<void> {
+		const query = req?.query ?? {}
 
-	public async editElementHandler(req: Request, res: Response): Promise<void> {}*/
+		const moduleName = query.module as string
+		const group = query.group as string
+		const unit = query.unit as string
+
+		// Check for valid parameters
+		if (!moduleName || !group || !unit) {
+			// No module --> Error: Missing arguments
+			res.json({
+				error: 'Missing arguments',
+				message: 'Missing one or many of the following parameters: module, group, unit'
+			})
+
+			return res.end()
+		}
+
+		try {
+			const module = await ORModule.findOne({ name: moduleName })
+
+			// Check if the module is found
+			if (!module) {
+				// No module found --> Error: No module found
+				res.json({
+					error: 'No module found',
+					message: `No module with name "${moduleName}"`
+				})
+
+				return res.end()
+			}
+
+			const groupId = parseInt(group, 10)
+			const unitId = parseInt(unit, 10)
+
+			// Check for valid groupId
+			if (groupId >= module.units.length) {
+				// Out of range groupId --> Error: Group out of range
+				res.json({
+					error: 'Group out of range',
+					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
+				})
+
+				return res.end()
+			}
+
+			// Check for valid unitId
+			if (unitId >= module.units[groupId].length) {
+				// Out of range unit --> Error: Unit out of range
+				res.json({
+					error: 'Unit out of range',
+					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
+				})
+
+				return res.end()
+			}
+
+			// Check for valid slotCount
+			const notNullElements = module.units[groupId][unitId].elements.filter((element) => element.value != null)
+			if (notNullElements.length > 0) {
+				// Some elements are not null --> Error: No empty elements remaining
+				res.json({
+					error: 'No empty elements remaining',
+					message: `There are ${notNullElements.length} non empty elements, please remove their value before removing the unit`
+				})
+
+				return res.end()
+			}
+
+			// Remove the unit
+			module.units[groupId].splice(unitId, 1)
+
+			// Save the document
+			await module.save()
+
+			res.json({ message: 'success', module: module.toJSON() })
+
+			return res.end()
+		} catch (error) {
+			// Error caught --> Something went wrong
+			res.json({
+				error: 'Unexpected error',
+				message: 'Something went wrong',
+				details: error
+			})
+
+			return res.end()
+		}
+	}
+
+	/**
+	 * Handle /editOCElement PUT route: Edit the content or the comment of and element
+	 */
+	public async editElementHandler(req: Request, res: Response): Promise<void> {
+		const query = req?.query ?? {}
+
+		const moduleName = query.module as string
+		const group = query.group as string
+		const unit = query.unit as string
+		const element = query.element as string
+		const value = query.value as string
+		const comment = query.comment as string
+
+		// Check for valid parameters
+		if (!moduleName || !group || !unit) {
+			// No module --> Error: Missing arguments
+			res.json({
+				error: 'Missing arguments',
+				message: 'Missing one or many of the following parameters: module, group, unit'
+			})
+
+			return res.end()
+		}
+
+		try {
+			const module = await ORModule.findOne({ name: moduleName })
+
+			// Check if the module is found
+			if (!module) {
+				// No module found --> Error: No module found
+				res.json({
+					error: 'No module found',
+					message: `No module with name "${moduleName}"`
+				})
+
+				return res.end()
+			}
+
+			const groupId = parseInt(group, 10)
+			const unitId = parseInt(unit, 10)
+			const elementId = parseInt(element, 10)
+
+			// Check for valid groupId
+			if (groupId >= module.units.length) {
+				// Out of range groupId --> Error: Group out of range
+				res.json({
+					error: 'Group out of range',
+					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
+				})
+
+				return res.end()
+			}
+
+			// Check for valid unitId
+			if (unitId >= module.units[groupId].length) {
+				// Out of range unit --> Error: Unit out of range
+				res.json({
+					error: 'Unit out of range',
+					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
+				})
+
+				return res.end()
+			}
+
+			// Check for valid elementId
+			if (elementId >= module.units[groupId][unitId].elements.length) {
+				// Out of range element --> Error: Unit out of range
+				res.json({
+					error: 'Unit out of range',
+					message: `Unit has only ${module.units[groupId][unitId].elements.length} elements, you are trying to get out of range element id ${elementId}`
+				})
+
+				return res.end()
+			}
+
+			// Edit the element
+			module.units[groupId][unitId].elements[elementId] = new ORElement({
+				value: value && value !== '' ? value : null,
+				comment: comment && comment !== '' ? comment : null
+			})
+
+			// Save the document
+			await module.save()
+
+			res.json({ message: 'success', module: module.toJSON() })
+
+			return res.end()
+		} catch (error) {
+			// Error caught --> Something went wrong
+			res.json({
+				error: 'Unexpected error',
+				message: 'Something went wrong',
+				details: error
+			})
+
+			return res.end()
+		}
+	}
 }

@@ -1,8 +1,7 @@
 import { model } from 'mongoose'
 import { Document, Model, Schema } from 'mongoose'
 
-import { IORRateSchema } from './ORRate'
-import { IORUnitSchema, ORUnitSchema } from './ORUnit'
+import { IORRateSchema, IORUnitSchema, ORUnitSchema } from './'
 
 // ---- Schema interface -----------------------------------------------------------------
 export interface IORModuleSchema extends Document {

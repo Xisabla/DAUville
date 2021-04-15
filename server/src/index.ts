@@ -1,7 +1,6 @@
 import config from './config'
-import { Application } from './core/'
-import { MeasureModule, UserModule } from './modules'
-import { OccupancyRateModule } from './modules/OccupancyRateModule'
+import { Application } from './core'
+import { MeasureModule, OccupancyRateModule, UserModule } from './modules'
 
 // ---- Package exports ------------------------------------------------------------------
 export * from './config'

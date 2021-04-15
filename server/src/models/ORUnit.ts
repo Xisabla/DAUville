@@ -2,8 +2,7 @@ import moment from 'moment'
 import { model } from 'mongoose'
 import { Document, Model, Schema } from 'mongoose'
 
-import { IORElementSchema, ORElement, ORElementSchema } from './ORElement'
-import { IORRateSchema, ORRate, ORRateSchema } from './ORRate'
+import { IORElementSchema, IORRateSchema, ORElement, ORElementSchema, ORRate, ORRateSchema } from './'
 
 // ---- Schema interface -----------------------------------------------------------------
 export interface IORUnitSchema extends Document {

@@ -1,9 +1,7 @@
 import { Request, Response } from 'express'
 
 import { Application, Module } from '../core'
-import { ORElement } from '../models/ORElement'
-import { IORModuleSchema, ORModule } from '../models/ORModule'
-import { ORUnit } from '../models/ORUnit'
+import { IORModuleSchema, ORElement, ORModule, ORUnit } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class OccupancyRateModule extends Module {

@@ -1,7 +1,9 @@
+import moment from 'moment'
 import { model } from 'mongoose'
 import { Document, Model, Schema } from 'mongoose'
 
 import { IORElementSchema, ORElement, ORElementSchema } from './ORElement'
+import { IORRateSchema, ORRate, ORRateSchema } from './ORRate'
 
 // ---- Schema interface -----------------------------------------------------------------
 export interface IORUnitSchema extends Document {
@@ -11,8 +13,12 @@ export interface IORUnitSchema extends Document {
 	slots: number
 	/** Elements of the unit */
 	elements: IORElementSchema[]
+	/** History of occupation rate value */
+	rates: IORRateSchema[]
 
 	// Methods
+	/** Compute the current occupation rate and append it to the history */
+	computeRate(): IORRateSchema
 	/** Fill the unit with empty elements */
 	fill(): void
 	/** Check if the units elements doesn't exceed the slot count */
@@ -24,7 +30,8 @@ export const ORUnitSchema = new Schema<IORUnitSchema, Model<IORUnitSchema>>(
 	{
 		name: { type: String, required: true },
 		slots: { type: Number, required: true },
-		elements: [ORElementSchema]
+		elements: [ORElementSchema],
+		rates: [ORRateSchema]
 	},
 	{ collection: 'occupancy-rate-units', timestamps: true }
 )
@@ -33,6 +40,26 @@ export const ORUnitSchema = new Schema<IORUnitSchema, Model<IORUnitSchema>>(
 export type IORUnit = Model<IORUnitSchema>
 
 // ---- Methods --------------------------------------------------------------------------
+/**
+ * Compute the current occupancy rate of the unit
+ * @returns The occupancy rate entry
+ */
+ORUnitSchema.methods.computeRate = function (): IORRateSchema {
+	const { slots, elements } = this
+	let occupied = 0
+
+	elements.forEach((element) => {
+		if (element.value !== null) occupied++
+	})
+
+	const rate = occupied / slots
+	const occupancyRate = new ORRate({ date: moment.utc().toDate, value: rate })
+
+	this.rates.push(occupancyRate)
+
+	return occupancyRate
+}
+
 /**
  * Fill the unit with empty elements
  */

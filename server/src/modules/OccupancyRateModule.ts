@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 
 import { Application, Module } from '../core'
-import { ORModule } from '../models/ORModule'
-import { IORUnitSchema, ORUnit } from '../models/ORUnit'
+import { IORModuleSchema, ORModule } from '../models/ORModule'
+import { ORUnit } from '../models/ORUnit'
 
 // ---- Module ---------------------------------------------------------------------------
 export class OccupancyRateModule extends Module {
@@ -32,6 +32,8 @@ export class OccupancyRateModule extends Module {
 		 * (DELETE)	- /removeUnit?module=<name>&group=<index>&unit=<index>
 		 * (PUT) 	- /editElement?module=<name>&group=<index>&unit=<index>&element=<index>&value=[value]&comment=[comment]
 		 */
+
+		this.registerTask('0 0 * * * *', this.updateOccupancyRates.bind(this))
 	}
 
 	/**
@@ -52,6 +54,30 @@ export class OccupancyRateModule extends Module {
 			this._log('Occupancy rate module entries initializing done')
 		} catch (error) {
 			this._log(`An error happened while initializing the occupancy rate modules in the database: ${error}`)
+		}
+	}
+
+	// ---- Tasks ------------------------------------------------------------------------
+
+	/**
+	 * Compute the occupancy rate of all the modules and update them
+	 * @returns All the modules
+	 */
+	public async updateOccupancyRates(): Promise<IORModuleSchema[]> {
+		this._log('Updating occupancy rates of modules')
+
+		try {
+			const modules = await ORModule.find()
+
+			await Promise.all(
+				modules.map(async (module) => {
+					await module.computeRates()
+				})
+			)
+
+			return modules
+		} catch (error) {
+			this._log('An error occurred while updating the modules occupancy rates')
 		}
 	}
 

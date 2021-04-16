@@ -6,7 +6,7 @@
     "dev": "run-p -l client-dev server-dev",
     "build": "npm run client-build && npm run server-build",
     "clean": "npm-run-all client-clean server-clean",
-    "prestart": "npm-run-all client-build server-build",
+    "prestart": "npm run client-build",
     "install": "npm-run-all client-install server-install",
     "client-install": "cd client && npm install",
     "client-build": "npm run build --prefix=./client",

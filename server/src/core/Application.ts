@@ -1,6 +1,6 @@
 import { urlencoded } from 'body-parser'
 import debug from 'debug'
-import express from 'express'
+import express, { Request, Response } from 'express'
 import session from 'express-session'
 import http from 'http'
 import memorystore from 'memorystore'
@@ -352,6 +352,9 @@ export class Application {
 		// Wait for db connection
 		await this._dbConnectionPromise
 		await this.ensureModulesInit()
+
+		// By default: redirect all wrong GET requests to homepage
+		app.get('*', (req: Request, res: Response) => res.redirect('/'))
 
 		// Start the server
 		return server.listen(port, () => {

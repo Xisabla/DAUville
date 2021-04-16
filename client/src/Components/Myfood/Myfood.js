@@ -42,7 +42,7 @@ const waterTemperatureMeasures = filterMeasureData(rawMyfoodData, 'Water Tempera
 const airTemperatureMeasures = filterMeasureData(rawMyfoodData, 'Air Temperature Sensor').reverse()
 const externalAirTemperatureMeasures = filterMeasureData(rawMyfoodData, 'External Air Temperature').reverse()
 const externalAirHumidityMeasures = filterMeasureData(rawMyfoodData, 'External Air Humidity').reverse()
-const airHumidityMeasures = filterMeasureData(rawMyfoodData, 'Air Humidity Sensor')
+const airHumidityMeasures = filterMeasureData(rawMyfoodData, 'Air Humidity Sensor').reverse()
 
 // ---- Component ------------------------------------------------------------------------
 /**

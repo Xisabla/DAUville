@@ -1,6 +1,6 @@
 import { urlencoded } from 'body-parser'
 import debug from 'debug'
-import express from 'express'
+import express, { Request, Response } from 'express'
 import session from 'express-session'
 import http from 'http'
 import memorystore from 'memorystore'
@@ -344,6 +344,9 @@ export class Application {
 		const { _app: app, _io: io, _server: server, _port: port, _public: pub } = this
 
 		if (pub) app.use(express.static(pub))
+
+		// By default: redirect all wrong GET requests to homepage
+		app.get('*', (req: Request, res: Response) => res.redirect('/'))
 
 		io.on('connection', this.onSocketJoin)
 

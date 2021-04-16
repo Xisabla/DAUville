@@ -1,9 +1,6 @@
 import axios from 'axios'
-import debug from 'debug'
 import moment from 'moment'
 import { Document, Model, model, Schema } from 'mongoose'
-
-const log = debug('model:FarmbotLogs')
 
 interface SequenceInformation {
 	name: string

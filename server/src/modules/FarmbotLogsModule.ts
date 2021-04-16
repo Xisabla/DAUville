@@ -1,10 +1,9 @@
 import { Request, Response } from 'express'
 import moment from 'moment'
 
-import { Application, Module } from '../core'
-import { FarmbotLogs, IFarmbotLogs, IFarmbotSchema } from '../models/FarmbotLogs'
-
 import config from '../config'
+import { Application, Module } from '../core'
+import { FarmbotLogs } from '../models/FarmbotLogs'
 
 export class FarmbotLogsModule extends Module {
 	constructor(app: Application) {

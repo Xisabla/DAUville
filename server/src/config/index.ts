@@ -33,7 +33,6 @@ import app from './application'
 import db from './database'
 import jwt from './farmbot'
 import security from './security'
-import jwt from './farmbot'
 
 export default {
 	app,

@@ -4,6 +4,9 @@ import { Link, NavLink } from 'react-router-dom'
 import farmbot from './img/farmbot.jpg'
 import greenhouse from './img/greenhouse.png'
 
+/**
+ * Component that allow the user to select on which route he wants to go (which modules he wants to visit)
+ */
 export class Sidebar extends Component {
 	render() {
 		return (

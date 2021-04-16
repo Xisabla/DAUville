@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 
+/**
+ * Test component
+ */
 export class Dashboard extends Component {
 	render() {
 		/*let dataPie = {

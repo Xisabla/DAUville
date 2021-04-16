@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom'
 
 import ISA from './img/ISA.jpg'
 
+/**
+ * Component that allow the user to see his main information and to edit some
+ * NOTE: This is currently a test component which is static
+ */
 export class UserProfile extends Component {
 	render() {
 		return (

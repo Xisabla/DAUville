@@ -6,6 +6,9 @@ import ChartistGraph from 'react-chartist'
 
 import { CounterWidget, StatsCard } from '../'
 
+/**
+ * Component that shows the cultivation carts main information
+ */
 export class CultivationCarts extends Component {
 	render() {
 		const data = {

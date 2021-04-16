@@ -15,6 +15,9 @@ const required = (value) => {
 	}
 }
 
+/**
+ * Component that manage the user login process
+ */
 export class Login extends Component {
 	constructor(props) {
 		super(props)

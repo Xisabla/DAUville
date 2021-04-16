@@ -2,11 +2,9 @@ import React, { Component } from 'react'
 import CheckButton from 'react-validation/build/button'
 import Form from 'react-validation/build/form'
 import Input from 'react-validation/build/input'
+import { isEmail } from 'validator'
 
 import { register } from '../../Services'
-// import { isEmail } from 'validator'
-
-// import AuthService from '../services/auth.service'
 
 const required = (value) => {
 	if (!value) {
@@ -18,15 +16,15 @@ const required = (value) => {
 	}
 }
 
-// const email = (value) => {
-// 	if (!isEmail(value)) {
-// 		return (
-// 			<div className="alert alert-danger" role="alert">
-// 				This is not a valid email.
-// 			</div>
-// 		)
-// 	}
-// }
+const email = (value) => {
+	if (!isEmail(value)) {
+		return (
+			<div className="alert alert-danger" role="alert">
+				This is not a valid email.
+			</div>
+		)
+	}
+}
 
 const vpassword = (value) => {
 	if (value.length < 6 || value.length > 40) {
@@ -38,6 +36,9 @@ const vpassword = (value) => {
 	}
 }
 
+/**
+ * Component that manage the admin user creation process
+ */
 export class Register extends Component {
 	constructor(props) {
 		super(props)
@@ -126,7 +127,7 @@ export class Register extends Component {
 										name="email"
 										value={this.state.email}
 										onChange={this.onChangeEmail}
-										validations={[required /*, email*/]}
+										validations={[required, email]}
 									/>
 								</div>
 

@@ -8,6 +8,9 @@ import { BrowserRouter as Router, Link, Redirect, Route, Switch } from 'react-ro
 
 import { CultivationCarts, Dashboard, Farmbot, Footer, Login, Myfood, Register, Sidebar, UserProfile } from '../'
 
+/**
+ * Component that manage the routes
+ */
 export class Main extends Component {
 	render() {
 		const stringifiedUser = localStorage.getItem('user')
@@ -24,7 +27,7 @@ export class Main extends Component {
 					<Route path="/Login" component={Login} />
 					<Route path="/Register" component={Register} />
 					<Route path="/Home">
-						{/* Note: This is probably a temporarily route */}
+						{/* Note: This is probably temporarily, this route content should be removed or moved to a dedicated component */}
 						<div>
 							{user ? (
 								<a
@@ -51,6 +54,9 @@ export class Main extends Component {
 	}
 }
 
+/**
+ * Base entry Component
+ */
 export class App extends Component {
 	render() {
 		return (

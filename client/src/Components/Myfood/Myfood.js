@@ -8,6 +8,12 @@ import { StatsCard } from '../'
 import rawMyfoodData from './measuresbrest.json'
 
 // ---- Helper methods -------------------------------------------------------------------
+/**
+ * Filter all the value of the given sensor from the hole data object returned by the API
+ * @param {Object} rawData Data object returned by the API
+ * @param {String} sensorName Name of the sensor to filter the data by
+ * @returns The values of the sensor
+ */
 function filterMeasureData(rawData, sensorName) {
 	return rawData
 		.filter((measure) => measure.sensor === sensorName)
@@ -15,6 +21,11 @@ function filterMeasureData(rawData, sensorName) {
 		.filter((value) => value)
 }
 
+/**
+ * Compute the mean value of an array of numbers
+ * @param {Array<Number>} numbers Numbers from which the mean value needs to be computed
+ * @returns The mean value of the numbers
+ */
 function mean(numbers) {
 	return numbers.reduce((a, b) => a + b, 0) / numbers.length ?? 0
 }
@@ -34,6 +45,9 @@ const externalAirHumidityMeasures = filterMeasureData(rawMyfoodData, 'External A
 const airHumidityMeasures = filterMeasureData(rawMyfoodData, 'Air Humidity Sensor')
 
 // ---- Component ------------------------------------------------------------------------
+/**
+ * Component that shows Myfood sensor measures
+ */
 export class Myfood extends Component {
 	render() {
 		let waterGraphData = {

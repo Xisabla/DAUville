@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
+/**
+ * Page footer component
+ */
 export class Footer extends Component {
 	render() {
 		return (

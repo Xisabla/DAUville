@@ -2,6 +2,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 import { Card } from 'react-bootstrap'
 
+/**
+ * React Component
+ * @param {Object} props Properties of the component
+ */
 export const CounterWidget = (props) => {
 	// TODO: Add react prop type validation
 	// eslint-disable-next-line react/prop-types

@@ -9,6 +9,10 @@ const useStyles = makeStyles({
 	}
 })
 
+/**
+ * React component method to create a card with statistic information
+ * @param {Object} param0 Properties of the component
+ */
 export function StatsCard({ ...props }) {
 	const classes = useStyles()
 	// TODO: Add react prop type validation

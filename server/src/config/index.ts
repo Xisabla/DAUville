@@ -31,10 +31,12 @@ export function devProdEnv(devKey: string, prodKey: string, defaultValue: string
 // ---- Config ---------------------------------------------------------------------------
 import app from './application'
 import db from './database'
+import jwt from './farmbot'
 import security from './security'
 
 export default {
 	app,
 	db,
-	security
+	security,
+	jwt
 }

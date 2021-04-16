@@ -345,14 +345,14 @@ export class Application {
 
 		if (pub) app.use(express.static(pub))
 
-		// By default: redirect all wrong GET requests to homepage
-		app.get('*', (req: Request, res: Response) => res.redirect('/'))
-
 		io.on('connection', this.onSocketJoin)
 
 		// Wait for db connection
 		await this._dbConnectionPromise
 		await this.ensureModulesInit()
+
+		// By default: redirect all wrong GET requests to homepage
+		app.get('*', (req: Request, res: Response) => res.redirect('/'))
 
 		// Start the server
 		return server.listen(port, () => {

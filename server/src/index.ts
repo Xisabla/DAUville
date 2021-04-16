@@ -1,8 +1,12 @@
 import config from './config'
-import { Application } from './core/'
-import { UserModule } from './modules'
-import { FarmbotLogsModule } from './modules/FarmbotLogsModule'
-import { MeasureModule } from './modules/MeasureModule'
+import { Application } from './core'
+import { FarmbotLogsModule, MeasureModule, OccupancyRateModule, UserModule } from './modules'
+
+// ---- Package exports ------------------------------------------------------------------
+export * from './config'
+export * from './core'
+export * from './models'
+export * from './modules'
 
 // ---- App ------------------------------------------------------------------------------
 const app = new Application({ ...config.app, ...{ db: config.db } })
@@ -11,6 +15,7 @@ const app = new Application({ ...config.app, ...{ db: config.db } })
 app.registerModule(UserModule)
 app.registerModule(MeasureModule)
 app.registerModule(FarmbotLogsModule)
+app.registerModule(OccupancyRateModule)
 
 // Run the server
 app.run()

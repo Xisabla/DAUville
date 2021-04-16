@@ -1,4 +1,4 @@
-// ---- User -----------------------------------------------------------------------------
+// ---- Models ---------------------------------------------------------------------------
 export { IMeasure, IMeasureSchema, Measure, MeasureSchema, Sensor } from './Measure'
 export { IORElement, IORElementSchema, ORElement, ORElementSchema } from './ORElement'
 export { IORModule, IORModuleSchema, ORModule, ORModuleSchema } from './ORModule'

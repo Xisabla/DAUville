@@ -9,8 +9,10 @@ const useStyles = makeStyles({
 	}
 })
 
-export default function StatsCard({ ...props }) {
+export function StatsCard({ ...props }) {
 	const classes = useStyles()
+	// TODO: Add react prop type validation
+	// eslint-disable-next-line react/prop-types
 	const { title, description, small } = props
 
 	return (

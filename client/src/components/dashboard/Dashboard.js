@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class Dashboard extends Component {
+export class Dashboard extends Component {
 	render() {
 		/*let dataPie = {
 			labels: ['40%', '20%', '40%'],
@@ -65,5 +65,3 @@ class Dashboard extends Component {
 		)
 	}
 }
-
-export default Dashboard

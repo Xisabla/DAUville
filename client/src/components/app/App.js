@@ -4,11 +4,9 @@ import './light-bootstrap-dashboard.css'
 import './App.css'
 
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom'
 
-import Dashboard from '../dashboard/Dashboard'
-import Myfood from '../myfood/Myfood'
-import Sidebar from '../sidebar/Sidebar'
+import { CultivationCarts, Dashboard, Farmbot, Footer, Login, Myfood, Register, Sidebar, UserProfile } from '../'
 
 export class Main extends Component {
 	render() {
@@ -16,9 +14,15 @@ export class Main extends Component {
 			<div className="main-panel">
 				<Switch>
 					<Route path="/Dashboard" component={Dashboard} />
+					<Route path="/Profile" component={UserProfile} />
+					<Route path="/Farmbot" component={Farmbot} />
 					<Route path="/Myfood" component={Myfood} />
-					{/* <Redirect from="*" to="/" /> */}
+					<Route path="/Carts" component={CultivationCarts} />
+					<Route path="/Login" component={Login} />
+					<Route path="/Register" component={Register} />
+					<Redirect from="*" to="/" />
 				</Switch>
+				<Footer />
 				{/* <Navbar />
 				<Switch>
 					<Route path="/Home" component={Dashboard} />

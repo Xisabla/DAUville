@@ -4,7 +4,7 @@ import { Link, NavLink } from 'react-router-dom'
 import farmbot from './img/farmbot.jpg'
 import greenhouse from './img/greenhouse.png'
 
-class Sidebar extends Component {
+export class Sidebar extends Component {
 	render() {
 		return (
 			<div className="sidebar">
@@ -40,9 +40,9 @@ class Sidebar extends Component {
 							</NavLink>
 						</li>
 						<li className="nav-item">
-							<NavLink className="nav-link" to="/Chariots">
+							<NavLink className="nav-link" to="/Carts">
 								<i className="nc-icon nc-circle-09"></i>
-								<p>Chariots</p>
+								<p>Cultivation Carts</p>
 							</NavLink>
 						</li>
 					</ul>
@@ -51,5 +51,3 @@ class Sidebar extends Component {
 		)
 	}
 }
-
-export default Sidebar

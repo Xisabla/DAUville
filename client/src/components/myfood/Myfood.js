@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 import ReactApexChart from 'react-apexcharts'
 import ChartistGraph from 'react-chartist'
 
-import StatsCard from '../statscard/StatsCard'
+import { StatsCard } from '../'
 import rawMyfoodData from './measuresbrest.json'
 
 // ---- Helper methods -------------------------------------------------------------------
@@ -34,7 +34,7 @@ const externalAirHumidityMeasures = filterMeasureData(rawMyfoodData, 'External A
 const airHumidityMeasures = filterMeasureData(rawMyfoodData, 'Air Humidity Sensor')
 
 // ---- Component ------------------------------------------------------------------------
-export default class Myfood extends Component {
+export class Myfood extends Component {
 	render() {
 		let waterGraphData = {
 			labels: dates,
@@ -162,17 +162,17 @@ export default class Myfood extends Component {
 					<div className="row">
 						<div className="col-md-4">
 							<div className="testt">
-								<div className="testt-body ">
-									<div className="testt-header ">
+								<div className="testt-body">
+									<div className="testt-header">
 										<h4 className="testt-title">Water Temperature</h4>
 									</div>
 									<ChartistGraph data={waterGraphData} type="Line" />
 									<hr />
 								</div>
 							</div>
-							<div className="testt ">
-								<div className="testt-body ">
-									<div className="testt-header ">
+							<div className="testt">
+								<div className="testt-body">
+									<div className="testt-header">
 										<h4 className="testt-title">Air Temperature / External Air temperature</h4>
 									</div>
 									<ReactApexChart
@@ -184,9 +184,9 @@ export default class Myfood extends Component {
 									<hr />
 								</div>
 							</div>
-							<div className="testt ">
-								<div className="testt-body ">
-									<div className="testt-header ">
+							<div className="testt">
+								<div className="testt-body">
+									<div className="testt-header">
 										<h4 className="testt-title">Air Humidity / External Air Humidity</h4>
 									</div>
 									<ReactApexChart

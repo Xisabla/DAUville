@@ -3,7 +3,7 @@ import CheckButton from 'react-validation/build/button'
 import Form from 'react-validation/build/form'
 import Input from 'react-validation/build/input'
 
-// import AuthService from '../services/auth.service'
+import { login } from '../../Services/'
 
 const required = (value) => {
 	if (!value) {
@@ -53,26 +53,19 @@ export class Login extends Component {
 		this.form.validateAll()
 
 		if (this.checkBtn.context._errors.length === 0) {
-			// TODO: Login using the back API
 			const { email, password } = this.state
-			console.log({ email, password })
-			/*AuthService.login(this.state.email, this.state.password).then(
-				() => {
-					this.props.history.push('/dashboard')
-					window.location.reload()
-				},
-				(error) => {
-					const resMessage =
-						(error.response && error.response.data && error.response.data.message) ||
-						error.message ||
-						error.toString()
 
-					this.setState({
-						loading: false,
-						message: resMessage
-					})
-				}
-			)*/
+			login(email, password)
+				.then(() => {
+					// TODO: Add react prop type validation
+					// eslint-disable-next-line react/prop-types
+					this.props.history.push('/Dashboard')
+				})
+				.catch((error) => {
+					const errorMessage = error.message ?? error.response ?? error.error ?? JSON.stringify(error)
+
+					this.setState({ loading: false, message: errorMessage })
+				})
 		} else {
 			this.setState({
 				loading: false

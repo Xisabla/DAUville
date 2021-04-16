@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import CheckButton from 'react-validation/build/button'
 import Form from 'react-validation/build/form'
 import Input from 'react-validation/build/input'
+
+import { register } from '../../Services'
 // import { isEmail } from 'validator'
 
 // import AuthService from '../services/auth.service'
@@ -76,26 +78,25 @@ export class Register extends Component {
 		if (this.checkBtn.context._errors.length === 0) {
 			// TODO: Register using the back API
 			const { email, password } = this.state
-			console.log({ email, password })
-			/*AuthService.register(this.state.email, this.state.password).then(
-				(response) => {
+			const token = localStorage.getItem('token')
+
+			register(email, password, token)
+				.then((user) => {
 					this.setState({
-						message: response.data.message,
+						message: `User created for email address "${user.email}"`,
 						successful: true
 					})
-				},
-				(error) => {
-					const resMessage =
-						(error.response && error.response.data && error.response.data.message) ||
-						error.message ||
-						error.toString()
+
+					console.log(user)
+				})
+				.catch((error) => {
+					const errorMessage = error.message ?? error.response ?? error.error ?? JSON.stringify(error)
 
 					this.setState({
 						successful: false,
-						message: resMessage
+						message: errorMessage
 					})
-				}
-			)*/
+				})
 		}
 	}
 
@@ -142,7 +143,7 @@ export class Register extends Component {
 								</div>
 
 								<div className="form-group">
-									<button className="btn btn-primary btn-block">Sign Up</button>
+									<button className="btn btn-primary btn-block">Create account</button>
 								</div>
 							</div>
 						)}

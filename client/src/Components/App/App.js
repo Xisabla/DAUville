@@ -4,12 +4,15 @@ import './light-bootstrap-dashboard.css'
 import './App.css'
 
 import React, { Component } from 'react'
-import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Link, Redirect, Route, Switch } from 'react-router-dom'
 
 import { CultivationCarts, Dashboard, Farmbot, Footer, Login, Myfood, Register, Sidebar, UserProfile } from '../'
 
 export class Main extends Component {
 	render() {
+		const stringifiedUser = localStorage.getItem('user')
+		const user = stringifiedUser ? JSON.parse(stringifiedUser) : null
+
 		return (
 			<div className="main-panel">
 				<Switch>
@@ -20,21 +23,29 @@ export class Main extends Component {
 					<Route path="/Carts" component={CultivationCarts} />
 					<Route path="/Login" component={Login} />
 					<Route path="/Register" component={Register} />
-					<Redirect from="*" to="/" />
+					<Route path="/Home">
+						{/* Note: This is probably a temporarily route */}
+						<div>
+							{user ? (
+								<a
+									href="#"
+									onClick={() => {
+										localStorage.removeItem('user')
+										localStorage.removeItem('token')
+										window.location.reload()
+									}}
+								>
+									Disconnect
+								</a>
+							) : (
+								<Link to="/Login">Login</Link>
+							)}
+							{user && user.type === 'ADMIN' ? <Link to="/Register">Create account</Link> : ''}
+						</div>
+					</Route>
+					<Redirect from="*" to="/Home" />
 				</Switch>
 				<Footer />
-				{/* <Navbar />
-				<Switch>
-					<Route path="/Home" component={Dashboard} />
-					<Route path="/Profile" component={UserProfile} />
-					<Route path="/Farmbot" component={Farmbot} />
-					<Route path="/Myfood" component={Myfood} />
-					<Route path="/Chariots" component={Chariots} />
-					<Route path="/Login" component={Login} />
-					<Route exact path="/register" component={Register} />
-					<Redirect from="*" to="/dashboard" />
-				</Switch>
-				<Footer /> */}
 			</div>
 		)
 	}

@@ -2,7 +2,7 @@ import { CronJob } from 'cron'
 import debug, { Debugger } from 'debug'
 import moment, { Moment } from 'moment'
 
-import { Module } from './Module'
+import { Module } from './'
 
 export type TaskAction = (task: Task) => Promise<any>
 export type TaskSchedule = string | Moment | Date

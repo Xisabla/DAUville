@@ -1,5 +1,5 @@
 import { defaultEnv } from '.'
 
 export default {
-	token: defaultEnv('JWT', 'None')
+	token: defaultEnv('FARMBOT_JWT', 'None')
 }

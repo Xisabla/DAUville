@@ -29,8 +29,20 @@ export class UserModule extends Module {
 		])
 	}
 
+	// ---- Routes -----------------------------------------------------------------------
+
 	/**
 	 * Handle /login POST route: Attempt to authenticate the user and send its information back
+	 *
+	 * Query parameters:
+	 *
+	 * 	- email <email> (mandatory) - Email of the user
+	 * 		eg: /login?email=test.test@test.test
+	 *
+	 * 	- password <password> (mandatory) - Password (clear) of the user
+	 * 		eg: /login?email=test.test@test.test&password=passw0rd
+	 *
+	 *  Response: { message: 'success', user: UserSchema }
 	 */
 	public async postLoginHandler(req: Request, res: Response): Promise<void> {
 		const { email, password } = req?.query ?? {}
@@ -81,6 +93,23 @@ export class UserModule extends Module {
 
 	/**
 	 * Handle /register POST route: Attempt to crete a new user of the given type (default: 'USER')
+	 *
+	 * Query parameters:
+	 *
+	 * 	- email <email> (mandatory) - Email of the new user
+	 * 		eg: /register?email=test.test@test.test
+	 *
+	 * 	- password <password> (mandatory) - Password (clear) of the new user
+	 * 		eg: /register?email=test.test@test.test&password=passw0rd
+	 *
+	 * 	- token <token> (mandatory) - JWT user token of the admin account that is creating the new user
+	 * 		eg: /register?email=test.test@test.test&password=passw0rd&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNjE4ODIyNDgyfQ.FHDzAl7aWGW9GfUbc2n-B23VPk4aVa6cEdqU3ryvuR4
+	 *
+	 * 	- type <type> (facultative) - Type of account ('USER' or 'ADMIN')
+	 * 		eg: /register?email=test.test@test.test&password=passw0rd&type=ADMIN&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNjE4ODIyNDgyfQ.FHDzAl7aWGW9GfUbc2n-B23VPk4aVa6cEdqU3ryvuR4
+	 * 		eg: /register?email=test.test@test.test&password=passw0rd&type=USER&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNjE4ODIyNDgyfQ.FHDzAl7aWGW9GfUbc2n-B23VPk4aVa6cEdqU3ryvuR4
+	 *
+	 *  Response: { message: 'success', user: UserSchema }
 	 */
 	public async postRegisterHandler(req: Request, res: Response): Promise<void> {
 		const { email, password } = req?.query ?? {}
@@ -153,6 +182,12 @@ export class UserModule extends Module {
 
 	/**
 	 * Handle /logout POST route: Logout the user if it exists
+	 *
+	 * Query parameters:
+	 * 	- token <token> (mandatory) - Token of the user that is attempting to logout
+	 * 		eg: /logout?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNjE4ODIyNDgyfQ.FHDzAl7aWGW9GfUbc2n-B23VPk4aVa6cEdqU3ryvuR4
+	 *
+	 * Response: { message: 'success', disconnected: true }
 	 */
 	public async postLogoutHandler(req: Request, res: Response): Promise<void> {
 		// NOTE: Session might not work as the client might be working with fetch, consider only the given query parameters

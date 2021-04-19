@@ -3,7 +3,7 @@ import moment from 'moment'
 
 import config from '../config'
 import { Application, Module } from '../core'
-import { FarmbotLogs } from '../models/FarmbotLogs'
+import { FarmbotLogs } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class FarmbotLogsModule extends Module {
@@ -26,6 +26,8 @@ export class FarmbotLogsModule extends Module {
 		])
 	}
 
+	// ---- Tasks ------------------------------------------------------------------------
+
 	/**
 	 * Fetch the farmbot logs from the API and store the sumup to the database
 	 */
@@ -45,17 +47,20 @@ export class FarmbotLogsModule extends Module {
 		}
 	}
 
+	// ---- Routes -----------------------------------------------------------------------
+
 	/**
 	 * Handle /getFarmbotDailySumUp GET route: Get the farmbot records stored in the database from the farmbot API
 	 *
 	 * Query:
-	 * 	- since <timestamp> - UNIX timestamp of an UTC value that correspond to the minimum date of the sumup
+	 * 	- since <timestamp> (facultative) - UNIX timestamp of an UTC value that correspond to the minimum date of the sumup
 	 * 		eg: /getFarmbotDailySumUp?since=1618319759 (search for entries after date 2021-04-13T13:15:59.000Z)
 	 *
-	 * 	- until <timestamp> - UNIX timestamp of an UTC value that correspond to the maximum date of the sumup
+	 * 	- until <timestamp> (facultative) - UNIX timestamp of an UTC value that correspond to the maximum date of the sumup
 	 * 		eg: /getFarmbotDailySumUp?until=1618320417 (search for entries before date 2021-04-13T13:26:57.000Z)
 	 * 		eg: /getFarmbotDailySumUp?since=1618319759&until=1618320417 (search for entries between dates 2021-04-13T13:15:59.000Z and 2021-04-13T13:26:57.000Z)
 	 *
+	 * Response: FarmbotLogsSchema[]
 	 */
 	private async getFarmbotDailySumUpHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}

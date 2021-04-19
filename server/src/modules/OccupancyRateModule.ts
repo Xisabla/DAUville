@@ -5,8 +5,6 @@ import { IORModuleSchema, ORElement, ORModule, ORUnit } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class OccupancyRateModule extends Module {
-	// ---- Basics -----------------------------------------------------------------------
-
 	/**
 	 * Allow the client to get the occupancy rates data and add/edit them
 	 * @param app Application
@@ -23,17 +21,6 @@ export class OccupancyRateModule extends Module {
 			{ type: 'HTTP', method: 'DELETE', path: '/removeOCUnit', handle: this.removeUnitHandler.bind(this) },
 			{ type: 'HTTP', method: 'PUT', path: '/editOCElement', handle: this.editElementHandler.bind(this) }
 		])
-
-		// TODO: Add examples/description of the route for all endpoints
-		/**
-		 * Endpoints:
-		 * (GET) 	- /getModule?name=<name>
-		 * (POST)	- /addUnit?module=<name>&name=<unitName>&slots=<unitSlots>&group=[index] (if no index or index > length, new group)
-		 * (PUT) 	- /moveUnit?module=<name>&group=<index>&unit=<index>&toGroup=<groupIndex>
-		 * (PUT) 	- /changeUnitSlots?module=<name>&group=<index>&unit=<index>&slots=<slots>
-		 * (DELETE)	- /removeUnit?module=<name>&group=<index>&unit=<index>
-		 * (PUT) 	- /editElement?module=<name>&group=<index>&unit=<index>&element=<index>&value=[value]&comment=[comment]
-		 */
 
 		this.registerTask('0 0 * * * *', this.updateOccupancyRates.bind(this))
 	}
@@ -87,6 +74,10 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /getOCModules GET route: Get all the modules occupancy rate information
+	 *
+	 * Query parameters: none
+	 *
+	 * Response: { modules: ORModuleSchema[] }
 	 */
 	public async getModulesHandler(req: Request, res: Response): Promise<void> {
 		try {
@@ -109,6 +100,12 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /getOCModule GET route: Get the occupancy rate information of a given module
+	 *
+	 * Query parameters:
+	 * 	- name <module> (mandatory) - Name of the module
+	 * 		eg: /getOCModule?name=Aquaponic%20greenhouse
+	 *
+	 * Response: { module: ORModuleSchema }
 	 */
 	public async getModuleHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -156,6 +153,22 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /addOCUnit POST route: Add a unit (name + slots) to a given module
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse
+	 *
+	 * 	- name <unit> (mandatory) - Name of the unit
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower
+	 *
+	 * - slots <number> (mandatory) - Number of slots of the unit
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6
+	 *
+	 * - groupIndex <group> (facultative) - Group of the unit, starts at 0 (-1 means new group)
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=2
+	 * 			/addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=-1
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
 	 */
 	public async addUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -229,6 +242,21 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /moveOCUnit PUT route: Move a unit from a group to another
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * 	- to <group> (mandatory) - Index of the new group of the unit
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6&to=0
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
 	 */
 	public async moveUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -324,6 +352,21 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /changeOCUnitSlots PUT route: Change the number of slots of a unit
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * 	- slots <slots> (mandatory) - New slot count of the unit
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6&slots=12
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
 	 */
 	public async changeUnitSlotsHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -421,6 +464,18 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /removeOCUnit DELETE route: Remove a unit if there are only empty elements inside
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
 	 */
 	public async removeUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -514,6 +569,27 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /editOCElement PUT route: Edit the content or the comment of and element
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * 	- element <element> (mandatory) - Index of the element inside the unit
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3
+	 *
+	 * 	- value <value> (facultative) - New value of the element
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry
+	 *
+	 * 	- comment <value> (facultative) - New comment of the element
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry&comment=Comment%20example%20here
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
 	 */
 	public async editElementHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}

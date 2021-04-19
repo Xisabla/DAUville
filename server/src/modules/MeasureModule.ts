@@ -50,6 +50,8 @@ export class MeasureModule extends Module {
 		}
 	}
 
+	// ---- Tasks ------------------------------------------------------------------------
+
 	/**
 	 * Fetch the MyFood public API to get the latest sensor records, store them in the database, and notify the new values to the users through sockets
 	 * @returns The new records
@@ -81,18 +83,20 @@ export class MeasureModule extends Module {
 		}
 	}
 
+	// ---- Routes -----------------------------------------------------------------------
+
 	/**
 	 * Handle /getMyFoodMeasures GET route: Get records stored in the database from my food API
 	 *
 	 * Query parameters:
-	 * 	- since <timestamp> - UNIX timestamp of an UTC value that correspond to the minimum date of the measure
+	 * 	- since <timestamp> (facultative) - UNIX timestamp of an UTC value that correspond to the minimum date of the measure
 	 * 		eg: /getMyFoodMeasures?since=1618319759 (search for entries after date 2021-04-13T13:15:59.000Z)
 	 *
-	 * 	- until <timestamp> - UNIX timestamp of an UTC value that correspond to the maximum date of the measure
+	 * 	- until <timestamp> (facultative) - UNIX timestamp of an UTC value that correspond to the maximum date of the measure
 	 * 		eg: /getMyFoodMeasures?until=1618320417 (search for entries before date 2021-04-13T13:26:57.000Z)
 	 * 			/getMyFoodMeasures?since=1618319759?until=1618320417 (search for entries between dates 2021-04-13T13:15:59.000Z and 2021-04-13T13:26:57.000Z)
 	 *
-	 *  - sensors <sensor1>,<sensor2>,... - List of sensors to get
+	 *  - sensors <sensor1>,<sensor2>,... (facultative) - List of sensors to get
 	 * 		eg: /getMyFoodMeasures&sensors=ph,humidity (only get the ph and humidity sensors values)
 	 * 		Response: [
 	 *			{
@@ -111,13 +115,14 @@ export class MeasureModule extends Module {
 	 *			}
 	 *		]
 	 *
-	 * 	- sort <[-]sort1>,<[-]sort2>,... - List of ordered fields to sort by (put a "-" before a field name to sort descending)
+	 * 	- sort <[-]sort1>,<[-]sort2>,... (facultative) - List of ordered fields to sort by (put a "-" before a field name to sort descending)
 	 *		eg: /getMyFoodMeasures?sort=value (order results by value)
 	 *		eg: /getMyFoodMeasures?sort=-sensor,value (order results by sensor name DESC and then by value ASC)
 	 *
-	 * 	- limit	<number> - Max number of results
+	 * 	- limit	<number> (facultative) - Max number of results
 	 * 		eg: /getMyFoodMeasures?limit=4 (will only return 4 maximum  results)
 	 *
+	 * Response: MeasureSchema[]
 	 */
 	public async getMyFoodMeasuresHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}

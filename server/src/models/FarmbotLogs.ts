@@ -5,21 +5,21 @@ import { Document, Model, model, Schema } from 'mongoose'
 /**
  * Sequence from the Farmbot API
  */
-interface SequenceInformation {
+export interface SequenceInformation {
 	name: string
 }
 
 /**
  * Record from the Farmbot API
  */
-interface LogsRecord {
+export interface LogsRecord {
 	type: string
 	message: string
 	updated_at: string
 }
 
 // ---- Schema interface -----------------------------------------------------------------
-export interface IFarmbotSchema extends Document {
+export interface IFarmbotLogsSchema extends Document {
 	/** Date of the record */
 	date: Date
 	/** Completed sequences of the day */
@@ -31,7 +31,7 @@ export interface IFarmbotSchema extends Document {
 }
 
 // ---- Schema ---------------------------------------------------------------------------
-export const FarmbotSchema = new Schema<IFarmbotSchema, Model<IFarmbotSchema>>(
+export const FarmbotLogsSchema = new Schema<IFarmbotLogsSchema, Model<IFarmbotLogsSchema>>(
 	{
 		date: { type: Date, required: true },
 		completedSequences: { type: Array, required: false },
@@ -42,9 +42,9 @@ export const FarmbotSchema = new Schema<IFarmbotSchema, Model<IFarmbotSchema>>(
 )
 
 // ---- Model Interface ------------------------------------------------------------------
-export interface IFarmbotLogs extends Model<IFarmbotSchema> {
+export interface IFarmbotLogs extends Model<IFarmbotLogsSchema> {
 	/** Fetch the farmbot logs and create a sumup entry */
-	fetchFarmbotDailySumup(authorizationKey: string): Promise<IFarmbotSchema>
+	fetchFarmbotDailySumup(authorizationKey: string): Promise<IFarmbotLogsSchema>
 	/** Fetch the sequences of the farmbot and get the completed one */
 	fetchCompletedSequences(authorizationKey: string): Promise<string[]>
 	/** Fetch the sequences of the farmbot and get the uncompleted one */
@@ -61,7 +61,9 @@ export interface IFarmbotLogs extends Model<IFarmbotSchema> {
  * @param authorizationKey API Token key
  * @returns The sumup object created with the logs
  */
-FarmbotSchema.statics.fetchFarmbotDailySumup = async function (authorizationKey: string): Promise<IFarmbotSchema> {
+FarmbotLogsSchema.statics.fetchFarmbotDailySumup = async function (
+	authorizationKey: string
+): Promise<IFarmbotLogsSchema> {
 	const completedSequences = await FarmbotLogs.fetchCompletedSequences(authorizationKey)
 	const uncompletedSequences = await FarmbotLogs.fetchUncompletedSequences(authorizationKey)
 	const errors = await FarmbotLogs.fetchErrors(authorizationKey)
@@ -81,7 +83,7 @@ FarmbotSchema.statics.fetchFarmbotDailySumup = async function (authorizationKey:
  * @param authorizationKey API Token key
  * @returns The completed sequences of the farmbot
  */
-FarmbotSchema.statics.fetchCompletedSequences = async function (authorizationKey: string): Promise<string[]> {
+FarmbotLogsSchema.statics.fetchCompletedSequences = async function (authorizationKey: string): Promise<string[]> {
 	const completedSequences = [] as Array<string>
 	const url = 'https://my.farmbot.io/api/logs'
 
@@ -142,7 +144,7 @@ FarmbotSchema.statics.fetchCompletedSequences = async function (authorizationKey
  * @param authorizationKey API Token key
  * @returns The uncompleted sequences of the farmbot
  */
-FarmbotSchema.statics.fetchUncompletedSequences = async function (authorizationKey: string): Promise<string[]> {
+FarmbotLogsSchema.statics.fetchUncompletedSequences = async function (authorizationKey: string): Promise<string[]> {
 	const uncompletedSequences = [] as Array<string>
 	const url = 'https://my.farmbot.io/api/logs'
 
@@ -202,7 +204,7 @@ FarmbotSchema.statics.fetchUncompletedSequences = async function (authorizationK
  * @param authorizationKey API Token key
  * @returns The errors of the farmbot
  */
-FarmbotSchema.statics.fetchErrors = async function (authorizationKey: string): Promise<LogsRecord[]> {
+FarmbotLogsSchema.statics.fetchErrors = async function (authorizationKey: string): Promise<LogsRecord[]> {
 	const url = 'https://my.farmbot.io/api/logs' as string
 	const logs = await axios(url, { headers: { Authorization: authorizationKey } })
 
@@ -220,7 +222,7 @@ FarmbotSchema.statics.fetchErrors = async function (authorizationKey: string): P
  * @param authorizationKey API Token key
  * @returns The sequences of the farmbot
  */
-FarmbotSchema.statics.fetchFarmbotSequences = async function (authorizationKey: string): Promise<string[]> {
+FarmbotLogsSchema.statics.fetchFarmbotSequences = async function (authorizationKey: string): Promise<string[]> {
 	const url = 'https://my.farmbot.io/api/sequences'
 	const response = await axios(url, { headers: { Authorization: authorizationKey } })
 	const sequences = response.data.map((sequence: SequenceInformation) => sequence.name) as Array<string>
@@ -229,4 +231,4 @@ FarmbotSchema.statics.fetchFarmbotSequences = async function (authorizationKey: 
 }
 
 // ---- Model ----------------------------------------------------------------------------
-export const FarmbotLogs = model<IFarmbotSchema, IFarmbotLogs>('FarmbotLogs', FarmbotSchema)
+export const FarmbotLogs = model<IFarmbotLogsSchema, IFarmbotLogs>('FarmbotLogs', FarmbotLogsSchema)

@@ -16,11 +16,50 @@ export interface IORUnitSchema extends Document {
 	rates: IORRateSchema[]
 
 	// Methods
-	/** Compute the current occupation rate and append it to the history */
+
+	/**
+	 * Compute the current occupancy rate of the unit
+	 * @returns The occupancy rate entry
+	 *
+	 * ```typescript
+	 * const module = new ORModule({ ... })
+	 * const unit = module.units[0][0]
+	 *
+	 * const rate = unit.computeRate()
+	 * ```
+	 */
 	computeRate(): IORRateSchema
-	/** Fill the unit with empty elements */
+
+	/**
+	 * Fill the unit with empty elements
+	 *
+	 * ```typescript
+	 * const module = new ORModule({ ... })
+	 * const unit = module.units[0][0]
+	 *
+	 * await unit.fill()
+	 * ```
+	 */
 	fill(): void
-	/** Check if the units elements doesn't exceed the slot count */
+
+	/**
+	 * Check if the units elements doesn't exceed the slot count
+	 * @returns false if the count exceeds, false otherwise
+	 *
+	 * ```typescript
+	 * const module = new ORModule({ ... })
+	 *
+	 * // Do changes on units
+	 * ...
+	 *
+	 * // Make sur all units are valid
+	 * for(groups in module.units) {
+	 * 		for(unit in groups) {
+	 * 			await group.validateSlots()
+	 * 		}
+	 * }
+	 * ```
+	 */
 	validateSlots(): boolean
 }
 
@@ -39,10 +78,7 @@ export const ORUnitSchema = new Schema<IORUnitSchema, Model<IORUnitSchema>>(
 export type IORUnit = Model<IORUnitSchema>
 
 // ---- Methods --------------------------------------------------------------------------
-/**
- * Compute the current occupancy rate of the unit
- * @returns The occupancy rate entry
- */
+/** Compute the current occupation rate and append it to the history */
 ORUnitSchema.methods.computeRate = function (): IORRateSchema {
 	const { slots, elements } = this
 	let occupied = 0
@@ -59,19 +95,14 @@ ORUnitSchema.methods.computeRate = function (): IORRateSchema {
 	return occupancyRate
 }
 
-/**
- * Fill the unit with empty elements
- */
+/** Fill the unit with empty elements */
 ORUnitSchema.methods.fill = function (): void {
 	while (this.elements.length < this.slots) {
 		this.elements.push(new ORElement({ value: null, comment: null }))
 	}
 }
 
-/**
- * Check if the units elements doesn't exceed the slot count
- * @returns false if the count exceeds, false otherwise
- */
+/** Check if the units elements doesn't exceed the slot count */
 ORUnitSchema.methods.validateSlots = function (): boolean {
 	return this.elements.length <= this.slots
 }

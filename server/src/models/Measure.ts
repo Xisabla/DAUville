@@ -48,23 +48,63 @@ export const MeasureSchema = new Schema<IMeasureSchema, Model<IMeasureSchema>>(
 
 // ---- Model Interface ------------------------------------------------------------------
 export interface IMeasure extends Model<IMeasureSchema> {
-	/** Fetch the records from MyFood API */
+	// Statics
+
+	/**
+	 * Fetch the records from MyFood API
+	 * @param greenhouseId The id of the greenhouse from the MyFood API
+	 * @param maxRecords The maximum amount of records to keep (most recent first), -1 for all (default: -1)
+	 * @returns The Measures from the fetched records
+	 *
+	 * ```typescript
+	 * const greenhouseId = 91
+	 * const records = await Measure.fetchMyFoodRecords(greenhouseId)
+	 * ```
+	 */
 	fetchMyFoodRecords(greenhouseId: number, maxRecords?: number): Promise<IMeasureSchema[]>
-	/** Fetch the records from MyFood API, but only returns the measures that are not registered in the database */
+
+	/**
+	 * Fetch the records from MyFood API, but only returns the measures that are not registered in the database
+	 * @param greenhouseId The id of the greenhouse from the MyFood API
+	 * @param maxRecords The maximum amount of records to keep (most recent first), -1 for all (default: -1)
+	 * @returns The filtered records
+	 *
+	 * ```typescript
+	 * const greenhouseId = 91
+	 * const newRecords = await Measure.fetchUnregisteredRecords(greenhouseId)
+	 * // to get only the last entry for each sensor
+	 * const newRecords = await Measure.fetchUnregisteredRecords(greenhouseId, 6)
+	 * ```
+	 */
 	fetchUnregisteredRecords(greenhouseId: number, maxRecords?: number): Promise<IMeasureSchema[]>
-	/** Filter all the given measures to keep only the ones the are not registered in the database */
+
+	/**
+	 * Filter all the given measures to keep only the ones the are not registered in the database
+	 * @param records The measures to filter
+	 * @returns The filtered measures
+	 *
+	 * ```typescript
+	 * const records = await Measure.fetchMyFoodRecords(greenhouseId)
+	 * const newRecords = await Measure.filterUnregisteredRecords(records)
+	 * ```
+	 */
 	filterUnregisteredRecords(records: IMeasureSchema[]): Promise<IMeasureSchema[]>
-	/** Get a sensor type by it's name */
+
+	/**
+	 * Get a sensor type by it's name
+	 * @param sensorName Sensor name
+	 * @returns Sensor type
+	 *
+	 * ```typescript
+	 * const sensorName = record.sensor
+	 * const sensor = Measure.getSensorByName(sensorName)
+	 * ```
+	 */
 	getSensorByName(sensorName: string): Sensor
 }
 
 // ---- Statics --------------------------------------------------------------------------
-/**
- * Fetch the records from MyFood API
- * @param greenhouseId The id of the greenhouse from the MyFood API
- * @param maxRecords The maximum amount of records to keep (most recent first), -1 for all (default: -1)
- * @returns The Measures from the fetched records
- */
+/** Fetch the records from MyFood API */
 MeasureSchema.statics.fetchMyFoodRecords = async function (
 	greenhouseId: number,
 	maxRecords?: number
@@ -91,12 +131,7 @@ MeasureSchema.statics.fetchMyFoodRecords = async function (
 	)
 }
 
-/**
- * Fetch the records from MyFood API, but only returns the measures that are not registered in the database
- * @param greenhouseId The id of the greenhouse from the MyFood API
- * @param maxRecords The maximum amount of records to keep (most recent first), -1 for all (default: -1)
- * @returns The filtered records
- */
+/** Fetch the records from MyFood API, but only returns the measures that are not registered in the database */
 MeasureSchema.statics.fetchUnregisteredRecords = async function (
 	greenhouseId: number,
 	maxRecords = -1
@@ -106,11 +141,7 @@ MeasureSchema.statics.fetchUnregisteredRecords = async function (
 	return await Measure.filterUnregisteredRecords(records)
 }
 
-/**
- * Filter all the given measures to keep only the ones the are not registered in the database
- * @param records The measures to filter
- * @returns The filtered measures
- */
+/** Filter all the given measures to keep only the ones the are not registered in the database */
 MeasureSchema.statics.filterUnregisteredRecords = async function (
 	records: IMeasureSchema[]
 ): Promise<IMeasureSchema[]> {
@@ -132,11 +163,7 @@ MeasureSchema.statics.filterUnregisteredRecords = async function (
 	return filtered
 }
 
-/**
- * Get a sensor type by it's name
- * @param sensorName Sensor name
- * @returns Sensor type
- */
+/** Get a sensor type by it's name */
 MeasureSchema.statics.getSensorByName = function (sensorName: string): Sensor {
 	switch (sensorName.toLowerCase()) {
 		case 'ph sensor':

@@ -4,10 +4,12 @@
 	"scripts": {
 		"build": "webpack --mode production --progress",
 		"dev": "webpack --mode development --watch",
-		"clean": "rimraf ./public/dist ./coverage ",
+		"clean": "rimraf ./public/dist ./coverage ../doc/client",
 		"lint": "eslint ./ --fix",
 		"serve": "webpack serve --progress",
-		"prebuild": "npm run lint"
+		"doc": "jsdoc src/ -r -d ../doc/client",
+		"prebuild": "npm run lint",
+		"predoc": "npm run clean"
 	},
 	"license": "MIT",
 	"devDependencies": {
@@ -23,6 +25,7 @@
 		"eslint-plugin-react": "^7.23.1",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
 		"file-loader": "^6.2.0",
+		"jsdoc": "^3.6.6",
 		"mini-css-extract-plugin": "^1.3.9",
 		"prettier": "^2.2.1",
 		"url-loader": "^4.1.1",

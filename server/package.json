@@ -6,9 +6,11 @@
     "start": "cross-env NODE_ENV=production DEBUG=core:Application node ./",
     "build": "tsc",
     "dev": "cross-env NODE_ENV=development DEBUG=core:*,model:*,module:*,task:* ts-node-dev src/index.ts",
-    "clean": "rimraf ./dist ./coverage",
+    "clean": "rimraf ./dist ./coverage ../doc/server",
     "lint": "eslint ./ --fix",
+	"doc": "typedoc src/index.ts --out ../doc/server --readme none",
     "prebuild": "npm run lint",
+	"predoc": "npm run clean",
     "prestart": "npm run build"
   },
   "license": "MIT",
@@ -33,6 +35,7 @@
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.6",
+    "typedoc": "^0.20.35",
     "typescript": "^4.2.3"
   },
   "dependencies": {

@@ -1,13 +1,11 @@
-import debug from 'debug'
 import { Request, Response } from 'express'
 import moment from 'moment'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import nodemailer from 'nodemailer'
 
 import config from '../config'
 import { Application, Module } from '../core'
-import { FarmbotLogs, IFarmbotLogs, IFarmbotSchema, LogsRecord } from '../models/FarmbotLogs'
-
-const log = debug('modules:FarmbotLogsModule')
+import { FarmbotLogs } from '../models/FarmbotLogs'
 
 export class FarmbotLogsModule extends Module {
 	constructor(app: Application) {
@@ -42,7 +40,7 @@ export class FarmbotLogsModule extends Module {
 			// 											DAILY SUM UP MAIL DELIVERY
 			//---------------------------------------------------------------------------------------------------------------
 
-			// Because the IT support does not want to provide us an email address for the project, the following section is 
+			// Because the IT support does not want to provide us an email address for the project, the following section is
 			// commented. Feel free to uncomment it as soon as you get an email address.
 
 			//---------------------------------------------------------------------------------------------------------------
@@ -83,7 +81,6 @@ export class FarmbotLogsModule extends Module {
 			// 	}
 			// )
 			//---------------------------------------------------------------------------------------------------------------
-
 		} catch (error) {
 			this._log(`An error happened while fetching Farmbot API: ${error}`)
 		}

@@ -2,7 +2,7 @@ import axios from 'axios'
 import moment from 'moment'
 import { Document, Model, model, Schema } from 'mongoose'
 
-interface SequenceInformation {
+export interface SequenceInformation {
 	name: string
 }
 

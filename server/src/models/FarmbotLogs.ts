@@ -6,7 +6,7 @@ interface SequenceInformation {
 	name: string
 }
 
-interface LogsRecord {
+export interface LogsRecord {
 	type: string
 	message: string
 	updated_at: string

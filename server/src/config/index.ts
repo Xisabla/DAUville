@@ -33,10 +33,12 @@ import app from './application'
 import db from './database'
 import jwt from './farmbot'
 import security from './security'
+import mail from './mail'
 
 export default {
 	app,
 	db,
 	security,
-	jwt
+	jwt,
+	mail
 }

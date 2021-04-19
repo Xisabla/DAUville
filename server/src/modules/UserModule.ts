@@ -51,6 +51,7 @@ export class UserModule extends Module {
 			// Check if email and password are not undefined
 			if (!email || !password) {
 				// No email or password --> Error: Missing arguments
+				res.status(400)
 				res.json({
 					error: 'Missing arguments',
 					message: 'Missing one or many of the following parameters: email,password'
@@ -64,6 +65,7 @@ export class UserModule extends Module {
 			// Check if there is user
 			if (!user) {
 				// No user found --> Error: Invalid credentials
+				res.status(400)
 				res.json({
 					error: 'Invalid credentials',
 					message: 'No user matching the given credentials'
@@ -76,11 +78,13 @@ export class UserModule extends Module {
 			user.password = '********'
 
 			req.session.user = user
+			res.status(200)
 			res.json({ message: 'success', user: user.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -120,6 +124,7 @@ export class UserModule extends Module {
 			// Check for fields
 			if (!email || !password || !token) {
 				// No email, password or token --> Error: Missing arguments
+				res.status(400)
 				res.json({
 					error: 'Missing arguments',
 					message: 'Missing one or many of the following parameters: email,password,token'
@@ -135,6 +140,7 @@ export class UserModule extends Module {
 			// Check for credentials
 			if (!admin || (admin && admin.type !== 'ADMIN')) {
 				// No user found from the token OR the user is not an admin --> Error: Invalid credentials
+				res.status(401)
 				res.json({
 					error: 'Insuffisant permissions',
 					message: "The given token doesn't not refer to an active session of an admin account"
@@ -146,6 +152,7 @@ export class UserModule extends Module {
 			// Check for already existing user
 			if (await User.exists({ email: email as string })) {
 				// A user already exists with this email --> Error: Email already take
+				res.status(400)
 				res.json({
 					error: 'Email already taken',
 					message: `An active account already exists with this email address: ${email}`
@@ -165,11 +172,13 @@ export class UserModule extends Module {
 			// Hide user password before sending it to the client
 			user.password = '********'
 
+			res.status(201)
 			res.json({ message: 'success', user })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -198,6 +207,7 @@ export class UserModule extends Module {
 			// Check if the token is not undefined
 			if (!token) {
 				// No token --> Error: Missing arguments
+				res.status(400)
 				res.json({
 					error: 'Missing arguments',
 					message: 'Missing one or many of the following parameters: token'
@@ -215,12 +225,14 @@ export class UserModule extends Module {
 				user.token = null
 				await user.save()
 
+				res.status(200)
 				res.json({ message: 'success', disconnected: true })
 
 				return res.end()
 			}
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(400)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',

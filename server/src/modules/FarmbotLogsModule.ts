@@ -95,6 +95,7 @@ export class FarmbotLogsModule extends Module {
 			// Check for valid sumups
 			if (!sumups || sumups.length === 0) {
 				// No sumups or empty array --> Error: No records
+				res.status(400)
 				res.json({
 					error: 'No records',
 					message: 'No sum up found'
@@ -104,11 +105,13 @@ export class FarmbotLogsModule extends Module {
 			}
 
 			// Send the sumups
+			res.status(200)
 			res.json(sumups.map((farmbot) => farmbot.toJSON()))
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',

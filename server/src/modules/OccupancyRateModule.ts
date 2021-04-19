@@ -83,11 +83,13 @@ export class OccupancyRateModule extends Module {
 		try {
 			const modules = await ORModule.find()
 
+			res.status(200)
 			res.json({ modules: modules.map((module) => module.toJSON()) })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -114,6 +116,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!name) {
 			// No name --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: name'
@@ -128,6 +131,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module if found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${name}"`
@@ -136,11 +140,13 @@ export class OccupancyRateModule extends Module {
 				return res.end()
 			}
 
+			res.status(200)
 			res.json({ module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -181,6 +187,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !name || !slots) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, name, slots, group (facultative)'
@@ -195,6 +202,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module if found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -206,6 +214,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the group index is valid
 			if (groupIndex > 0 && groupIndex >= module.units.length) {
 				// Out of range groupIndex --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupIndex} is out of range (${module.units.length} groups for the module)`
@@ -225,11 +234,13 @@ export class OccupancyRateModule extends Module {
 			// Save the module
 			await module.save()
 
+			res.status(201)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -269,6 +280,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit || !to) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit, to'
@@ -283,6 +295,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -298,6 +311,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Source group out of range
+				res.status(400)
 				res.json({
 					error: 'Source group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -309,6 +323,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -320,6 +335,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid toId
 			if (toId > module.units.length) {
 				// Out of range toId --> Error: Destination group out of range
+				res.status(400)
 				res.json({
 					error: 'Destination group out of range',
 					message: `Group index ${toId} is out of range (${module.units.length} groups for the module)`
@@ -335,11 +351,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -379,6 +397,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit || !slots) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit, slots'
@@ -393,6 +412,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -408,6 +428,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -419,6 +440,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -431,6 +453,7 @@ export class OccupancyRateModule extends Module {
 			const notNullElements = module.units[groupId][unitId].elements.filter((element) => element.value != null)
 			if (notNullElements.length > slotCount) {
 				// Not enough slots --> Error: Not enough slots for the current elements
+				res.status(400)
 				res.json({
 					error: 'Not enough slots for the current elements',
 					message: `There are ${notNullElements.length} non empty elements, please remove their value before removing slots`
@@ -447,11 +470,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -487,6 +512,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit'
@@ -501,6 +527,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -515,6 +542,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -526,6 +554,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -538,6 +567,7 @@ export class OccupancyRateModule extends Module {
 			const notNullElements = module.units[groupId][unitId].elements.filter((element) => element.value != null)
 			if (notNullElements.length > 0) {
 				// Some elements are not null --> Error: No empty elements remaining
+				res.status(400)
 				res.json({
 					error: 'No empty elements remaining',
 					message: `There are ${notNullElements.length} non empty elements, please remove their value before removing the unit`
@@ -552,11 +582,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -604,6 +636,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit'
@@ -618,6 +651,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -633,6 +667,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -644,6 +679,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -655,6 +691,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid elementId
 			if (elementId >= module.units[groupId][unitId].elements.length) {
 				// Out of range element --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Unit has only ${module.units[groupId][unitId].elements.length} elements, you are trying to get out of range element id ${elementId}`
@@ -672,11 +709,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',

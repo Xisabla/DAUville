@@ -189,6 +189,7 @@ export class MeasureModule extends Module {
 			// Check for valid mesures
 			if (!measures || measures.length === 0) {
 				// No mesures or empty array --> Error: No records
+				res.status(400)
 				res.json({
 					error: 'No records',
 					message: 'No measure found'
@@ -198,11 +199,13 @@ export class MeasureModule extends Module {
 			}
 
 			// Send the measures
+			res.status(200)
 			res.json(measures.map((measure) => measure.toJSON()))
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',

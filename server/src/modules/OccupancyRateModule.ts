@@ -5,8 +5,6 @@ import { IORModuleSchema, ORElement, ORModule, ORUnit } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class OccupancyRateModule extends Module {
-	// ---- Basics -----------------------------------------------------------------------
-
 	/**
 	 * Allow the client to get the occupancy rates data and add/edit them
 	 * @param app Application
@@ -23,17 +21,6 @@ export class OccupancyRateModule extends Module {
 			{ type: 'HTTP', method: 'DELETE', path: '/removeOCUnit', handle: this.removeUnitHandler.bind(this) },
 			{ type: 'HTTP', method: 'PUT', path: '/editOCElement', handle: this.editElementHandler.bind(this) }
 		])
-
-		// TODO: Add examples/description of the route for all endpoints
-		/**
-		 * Endpoints:
-		 * (GET) 	- /getModule?name=<name>
-		 * (POST)	- /addUnit?module=<name>&name=<unitName>&slots=<unitSlots>&group=[index] (if no index or index > length, new group)
-		 * (PUT) 	- /moveUnit?module=<name>&group=<index>&unit=<index>&toGroup=<groupIndex>
-		 * (PUT) 	- /changeUnitSlots?module=<name>&group=<index>&unit=<index>&slots=<slots>
-		 * (DELETE)	- /removeUnit?module=<name>&group=<index>&unit=<index>
-		 * (PUT) 	- /editElement?module=<name>&group=<index>&unit=<index>&element=<index>&value=[value]&comment=[comment]
-		 */
 
 		this.registerTask('0 0 * * * *', this.updateOccupancyRates.bind(this))
 	}
@@ -87,16 +74,31 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /getOCModules GET route: Get all the modules occupancy rate information
+	 *
+	 * Query parameters: none
+	 *
+	 * Response: { modules: ORModuleSchema[] }
+	 *
+	 * ```typescript
+	 * const module = await('/getOCModules', { method: 'GET' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module) // [ { name: '...', units: [ [...], [...], ... ] }, { name: '...', units: [ [...], [...], ... ] }, ... ]
+	 * }
+	 * ```
 	 */
 	public async getModulesHandler(req: Request, res: Response): Promise<void> {
 		try {
 			const modules = await ORModule.find()
 
+			res.status(200)
 			res.json({ modules: modules.map((module) => module.toJSON()) })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -109,6 +111,21 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /getOCModule GET route: Get the occupancy rate information of a given module
+	 *
+	 * Query parameters:
+	 * 	- name <module> (mandatory) - Name of the module
+	 * 		eg: /getOCModule?name=Aquaponic%20greenhouse
+	 *
+	 * Response: { module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/getOCModule?name=Aquaponic%20greenhouse', { method: 'GET' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module) // { name: '...', units: [ [...], [...], ... ] }
+	 * }
+	 * ```
 	 */
 	public async getModuleHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -117,6 +134,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!name) {
 			// No name --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: name'
@@ -131,6 +149,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module if found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${name}"`
@@ -139,11 +158,13 @@ export class OccupancyRateModule extends Module {
 				return res.end()
 			}
 
+			res.status(200)
 			res.json({ module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -156,6 +177,31 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /addOCUnit POST route: Add a unit (name + slots) to a given module
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse
+	 *
+	 * 	- name <unit> (mandatory) - Name of the unit
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower
+	 *
+	 * - slots <number> (mandatory) - Number of slots of the unit
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6
+	 *
+	 * - groupIndex <group> (facultative) - Group of the unit, starts at 0 (-1 means new group)
+	 * 		eg: /addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=2
+	 * 			/addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=-1
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=2', { method: 'POST' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][module.module[2].length - 1].slots) // The unit that you just created
+	 * }
+	 * ```
 	 */
 	public async addUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -168,6 +214,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !name || !slots) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, name, slots, group (facultative)'
@@ -182,6 +229,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module if found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -193,6 +241,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the group index is valid
 			if (groupIndex > 0 && groupIndex >= module.units.length) {
 				// Out of range groupIndex --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupIndex} is out of range (${module.units.length} groups for the module)`
@@ -212,11 +261,13 @@ export class OccupancyRateModule extends Module {
 			// Save the module
 			await module.save()
 
+			res.status(201)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -229,6 +280,30 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /moveOCUnit PUT route: Move a unit from a group to another
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * 	- to <group> (mandatory) - Index of the new group of the unit
+	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6&to=0
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6&to=0', { method: 'PUT' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[0][module.module[0].length - 1].slots) // The unit that you just moved
+	 * }
+	 * ```
 	 */
 	public async moveUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -241,6 +316,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit || !to) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit, to'
@@ -255,6 +331,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -270,6 +347,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Source group out of range
+				res.status(400)
 				res.json({
 					error: 'Source group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -281,6 +359,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -292,6 +371,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid toId
 			if (toId > module.units.length) {
 				// Out of range toId --> Error: Destination group out of range
+				res.status(400)
 				res.json({
 					error: 'Destination group out of range',
 					message: `Group index ${toId} is out of range (${module.units.length} groups for the module)`
@@ -307,11 +387,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -324,6 +406,30 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /changeOCUnitSlots PUT route: Change the number of slots of a unit
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * 	- slots <slots> (mandatory) - New slot count of the unit
+	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6&slots=12
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6&slots=12', { method: 'PUT' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][6].slots) // 12
+	 * }
+	 * ```
 	 */
 	public async changeUnitSlotsHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -336,6 +442,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit || !slots) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit, slots'
@@ -350,6 +457,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -365,6 +473,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -376,6 +485,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -388,6 +498,7 @@ export class OccupancyRateModule extends Module {
 			const notNullElements = module.units[groupId][unitId].elements.filter((element) => element.value != null)
 			if (notNullElements.length > slotCount) {
 				// Not enough slots --> Error: Not enough slots for the current elements
+				res.status(400)
 				res.json({
 					error: 'Not enough slots for the current elements',
 					message: `There are ${notNullElements.length} non empty elements, please remove their value before removing slots`
@@ -404,11 +515,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -421,6 +534,27 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /removeOCUnit DELETE route: Remove a unit if there are only empty elements inside
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/removeOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6', { method: 'DELETE' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][6].length) // Length before the fetch -1
+	 * }
+	 * ```
 	 */
 	public async removeUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -432,6 +566,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit'
@@ -446,6 +581,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -460,6 +596,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -471,6 +608,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -483,6 +621,7 @@ export class OccupancyRateModule extends Module {
 			const notNullElements = module.units[groupId][unitId].elements.filter((element) => element.value != null)
 			if (notNullElements.length > 0) {
 				// Some elements are not null --> Error: No empty elements remaining
+				res.status(400)
 				res.json({
 					error: 'No empty elements remaining',
 					message: `There are ${notNullElements.length} non empty elements, please remove their value before removing the unit`
@@ -497,11 +636,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',
@@ -514,6 +655,36 @@ export class OccupancyRateModule extends Module {
 
 	/**
 	 * Handle /editOCElement PUT route: Edit the content or the comment of and element
+	 *
+	 * Query parameters:
+	 * 	- module <module> (mandatory) - Name of the module
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse
+	 *
+	 * 	- group <group> (mandatory) - Group of the unit inside the module
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2
+	 *
+	 * 	- unit <unit> (mandatory) - Index of the unit inside the group
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6
+	 *
+	 * 	- element <element> (mandatory) - Index of the element inside the unit
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3
+	 *
+	 * 	- value <value> (facultative) - New value of the element
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry
+	 *
+	 * 	- comment <value> (facultative) - New comment of the element
+	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry&comment=Comment%20example%20here
+	 *
+	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry&comment=Comment%20example%20here', { method: 'PUT' })
+	 * 		.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][6][3]) // { value: 'strawberry', comment: 'Comment example here' }
+	 * }
+	 * ```
 	 */
 	public async editElementHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -528,6 +699,7 @@ export class OccupancyRateModule extends Module {
 		// Check for valid parameters
 		if (!moduleName || !group || !unit) {
 			// No module --> Error: Missing arguments
+			res.status(400)
 			res.json({
 				error: 'Missing arguments',
 				message: 'Missing one or many of the following parameters: module, group, unit'
@@ -542,6 +714,7 @@ export class OccupancyRateModule extends Module {
 			// Check if the module is found
 			if (!module) {
 				// No module found --> Error: No module found
+				res.status(400)
 				res.json({
 					error: 'No module found',
 					message: `No module with name "${moduleName}"`
@@ -557,6 +730,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid groupId
 			if (groupId >= module.units.length) {
 				// Out of range groupId --> Error: Group out of range
+				res.status(400)
 				res.json({
 					error: 'Group out of range',
 					message: `Group index ${groupId} is out of range (${module.units.length} groups for the module)`
@@ -568,6 +742,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid unitId
 			if (unitId >= module.units[groupId].length) {
 				// Out of range unit --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Group index ${groupId} has only ${module.units[groupId].length} units, you are trying to get out of range unit id ${unitId}`
@@ -579,6 +754,7 @@ export class OccupancyRateModule extends Module {
 			// Check for valid elementId
 			if (elementId >= module.units[groupId][unitId].elements.length) {
 				// Out of range element --> Error: Unit out of range
+				res.status(400)
 				res.json({
 					error: 'Unit out of range',
 					message: `Unit has only ${module.units[groupId][unitId].elements.length} elements, you are trying to get out of range element id ${elementId}`
@@ -596,11 +772,13 @@ export class OccupancyRateModule extends Module {
 			// Save the document
 			await module.save()
 
+			res.status(200)
 			res.json({ message: 'success', module: module.toJSON() })
 
 			return res.end()
 		} catch (error) {
 			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',

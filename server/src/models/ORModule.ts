@@ -11,7 +11,18 @@ export interface IORModuleSchema extends Document {
 	units: IORUnitSchema[][]
 
 	// Methods
-	/** Compute the current occupancy rate of each unit of each group */
+
+	/**
+	 * Compute the current occupancy rate of each unit of each group
+	 * @returns Each rate of each unit of each group as an array
+	 *
+	 * ```typescript
+	 * const module = new ORModule({ ... })
+	 * ...
+	 *
+	 * await rates = module.computeRates()
+	 * ```
+	 */
 	computeRates(): Promise<{ group: number; unit: number; rate: IORRateSchema }[]>
 }
 
@@ -28,10 +39,7 @@ export const ORModuleSchema = new Schema<IORModuleSchema, Model<IORModuleSchema>
 export type IORModule = Model<IORModuleSchema>
 
 // ---- Methods --------------------------------------------------------------------------
-/**
- * Compute the current occupancy rate of each unit of each group
- * @returns Each rate of each unit of each group as an array
- */
+/** Compute the current occupancy rate of each unit of each group */
 ORModuleSchema.methods.computeRates = async function (): Promise<{ unit: number; rate: IORRateSchema }[]> {
 	const rates = []
 	const groups = this.units

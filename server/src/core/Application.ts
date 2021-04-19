@@ -100,6 +100,26 @@ export class Application {
 	/**
 	 * Application object that handle the main working process of the project
 	 * @param options Options of the Application
+	 *
+	 * ```typescript
+	 * const app = new Application({
+	 * 		public: '/public',
+	 * 		port: 3000,
+	 * 		db: { ...dbParameters },
+	 * 		waitForModuleInit: true
+	 * })
+	 *
+	 * app.registerModule(...)
+	 * app.registerModule(...)
+	 * ...
+	 *
+	 * try {
+	 * 		app.run()
+	 * } catch(error) {
+	 * 		// Error handling on promise catch
+	 * 		console.log(error)
+	 * }
+	 * ```
 	 */
 	constructor(options: AppOptions = {}) {
 		// Read options
@@ -144,10 +164,16 @@ export class Application {
 
 	// ---- Database -------------------------------------------------------------------------
 
+	// TODO: Don't use then and catch but use async/await instead
+
 	/**
 	 * Try to connect to the mongo database
 	 * @param options Credentials
 	 * @returns Mongoose instance
+	 *
+	 * ```typescript
+	 * const db = await connectDatabase({ ...dbOptions })
+	 * ```
 	 */
 	private connectDatabase(options: AppOptions['db']): Promise<Mongoose> {
 		const { url, user, pass, dbname: dbName } = options
@@ -190,6 +216,10 @@ export class Application {
 	 * Instantiate and link a module to the Application
 	 * @param moduleClass Class of the module to register
 	 * @returns The instance of the module
+	 *
+	 * ```typescript
+	 * const module = await registerModule(MyModuleClass, { wait: true })
+	 * ```
 	 */
 	public async registerModule(
 		moduleClass: Instantiable<Module>,
@@ -251,6 +281,11 @@ export class Application {
 	 * @param path Path to match
 	 * @param type Endpoint type to match
 	 * @returns The endpoint if one is found, otherwise null
+	 *
+	 * ```typescript
+	 * const userSocketEndpoint = getEndpoint('/userLogin', 'Socket')
+	 * const userHTTPEndpoint = getEndpoint('/userLogin', 'HTTP')
+	 * ```
 	 */
 	public getEndpoint(path: EndpointPath, type: EndpointType): Endpoint | null {
 		const endpoints = this._endpoints.find({ path, type })
@@ -263,6 +298,12 @@ export class Application {
 	/**
 	 * Spread client socket connection information
 	 * @param socket Client socket
+	 *
+	 * ```typescript
+	 * io.on('connection', (socket) => {
+	 * 		onSocketJoin(socket)
+	 * })
+	 * ```
 	 */
 	private onSocketJoin(socket: Socket): void {
 		const { id } = socket
@@ -287,6 +328,12 @@ export class Application {
 	 * Listen to requests from the socket to redirect them
 	 * @param socket Socket to listen to the requests from
 	 * @returns Whatever the handler returns
+	 *
+	 * ```typescript
+	 * io.on('connection', (socket) => {
+	 * 		listenSocketRequests(socket)
+	 * })
+	 * ```
 	 */
 	private listenSocketRequests(socket: Socket): any {
 		socket.on('request', (data: any) => {
@@ -307,6 +354,12 @@ export class Application {
 	 * @param path Path of the request
 	 * @param data Data transmitted by the socket
 	 * @returns Whatever the handler returns
+	 *
+	 * ```typescript
+	 * socket.on('request', (data) => {
+	 * 		const res = handleSocketRequest(socket, data.path, data)
+	 * })
+	 * ```
 	 */
 	private handleSocketRequest(socket: Socket, path: EndpointPath, data: any): any {
 		const edp: Endpoint | null = this.getEndpoint(path, 'Socket')
@@ -333,6 +386,10 @@ export class Application {
 
 	/**
 	 * @returns The Promises results of the init methods of all modules that have the wait flag at true
+	 *
+	 * ```typescript
+	 * const modulesInitResponses = await ensureModulesInit()
+	 * ```
 	 */
 	private async ensureModulesInit(): Promise<any[]> {
 		return await Promise.all(this._modules.filter((module) => module.wait).map((module) => module.initPromise))
@@ -341,6 +398,7 @@ export class Application {
 	/**
 	 * Start the server
 	 * @returns The instance of the HTTP server
+	 * @see Application.constructor
 	 */
 	public async run(): Promise<http.Server> {
 		const { _app: app, _io: io, _server: server, _port: port, _public: pub } = this

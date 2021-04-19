@@ -5,9 +5,14 @@ import nodemailer from 'nodemailer'
 
 import config from '../config'
 import { Application, Module } from '../core'
-import { FarmbotLogs } from '../models/FarmbotLogs'
+import { FarmbotLogs } from '../models'
 
+// ---- Module ---------------------------------------------------------------------------
 export class FarmbotLogsModule extends Module {
+	/**
+	 * Allow farmbot daily logs sumup fetching
+	 * @param app Application
+	 */
 	constructor(app: Application) {
 		super(app, 'FarmbotLogsModule')
 
@@ -23,6 +28,11 @@ export class FarmbotLogsModule extends Module {
 		])
 	}
 
+	// ---- Tasks ------------------------------------------------------------------------
+
+	/**
+	 * Fetch the farmbot logs from the API and store the sumup to the database
+	 */
 	private async updateFarmbotDailySumUp(): Promise<void> {
 		this._log('Adding Farmbot daily sum up...')
 
@@ -32,8 +42,10 @@ export class FarmbotLogsModule extends Module {
 		// const mailPass = config.mail.pass
 
 		try {
+			// Fetch the farmbot logs and store them to sum up
 			const sumup = await FarmbotLogs.fetchFarmbotDailySumup(authorizationKey)
 
+			// Sum the sumup
 			await sumup.save()
 
 			//---------------------------------------------------------------------------------------------------------------
@@ -86,10 +98,39 @@ export class FarmbotLogsModule extends Module {
 		}
 	}
 
+	// ---- Routes -----------------------------------------------------------------------
+
+	/**
+	 * Handle /getFarmbotDailySumUp GET route: Get the farmbot records stored in the database from the farmbot API
+	 *
+	 * Query:
+	 * 	- since <timestamp> (facultative) - UNIX timestamp of an UTC value that correspond to the minimum date of the sumup
+	 * 		eg: /getFarmbotDailySumUp?since=1618319759 (search for entries after date 2021-04-13T13:15:59.000Z)
+	 *
+	 * 	- until <timestamp> (facultative) - UNIX timestamp of an UTC value that correspond to the maximum date of the sumup
+	 * 		eg: /getFarmbotDailySumUp?until=1618320417 (search for entries before date 2021-04-13T13:26:57.000Z)
+	 * 		eg: /getFarmbotDailySumUp?since=1618319759&until=1618320417 (search for entries between dates 2021-04-13T13:15:59.000Z and 2021-04-13T13:26:57.000Z)
+	 *
+	 * Response: FarmbotLogsSchema[]
+	 *
+	 * ```typescript
+	 * // Client
+	 * const sumups = fetch('/getFarmbotDailySumUp').then((res) => res.json())
+	 *
+	 * if(sumups.error) {
+	 * 		// Handle error
+	 * 		...
+	 * } else {
+	 * 		const todaySumup = sumups[sumups.length - 1]
+	 * 		console.log(todaySumup) // { date: ..., completedSequences: [ ... ], uncompletedSequences: [ ... ], errorLogs: [ ... ] }
+	 * }
+	 * ```
+	 */
 	private async getFarmbotDailySumUpHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
 
 		try {
+			// Sumups minimum date, default: now - 30 days
 			const since = query.since
 				? moment
 						.unix(parseInt(query.since as string, 10))
@@ -97,6 +138,7 @@ export class FarmbotLogsModule extends Module {
 						.toDate()
 				: moment.utc().add(-30, 'days').toDate()
 
+			// Sumups maximum date, default: now + 1 minute
 			const until = query.until
 				? moment
 						.unix(parseInt(query.until as string, 10))
@@ -104,16 +146,20 @@ export class FarmbotLogsModule extends Module {
 						.toDate()
 				: moment.utc().add(1, 'minutes').toDate()
 
-			const farmbotQuery = FarmbotLogs.find({
+			// Fetch the sumups
+			const sumupsQuery = FarmbotLogs.find({
 				date: {
 					$gte: since,
 					$lte: until
 				}
 			})
 
-			const farmbot = await farmbotQuery
+			const sumups = await sumupsQuery
 
-			if (!farmbot || farmbot.length === 0) {
+			// Check for valid sumups
+			if (!sumups || sumups.length === 0) {
+				// No sumups or empty array --> Error: No records
+				res.status(400)
 				res.json({
 					error: 'No records',
 					message: 'No sum up found'
@@ -122,10 +168,14 @@ export class FarmbotLogsModule extends Module {
 				return res.end()
 			}
 
-			res.json(farmbot.map((farmbot) => farmbot.toJSON()))
+			// Send the sumups
+			res.status(200)
+			res.json(sumups.map((farmbot) => farmbot.toJSON()))
 
 			return res.end()
 		} catch (error) {
+			// Error caught --> Something went wrong
+			res.status(500)
 			res.json({
 				error: 'Unexpected error',
 				message: 'Something went wrong',

@@ -1,4 +1,12 @@
 // ---- Models ---------------------------------------------------------------------------
+export {
+	FarmbotLogs,
+	FarmbotLogsSchema as FarmbotSchema,
+	IFarmbotLogs,
+	IFarmbotLogsSchema as IFarmbotSchema,
+	LogsRecord,
+	SequenceInformation
+} from './FarmbotLogs'
 export { IMeasure, IMeasureSchema, Measure, MeasureSchema, Sensor } from './Measure'
 export { IORElement, IORElementSchema, ORElement, ORElementSchema } from './ORElement'
 export { IORModule, IORModuleSchema, ORModule, ORModuleSchema } from './ORModule'

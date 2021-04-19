@@ -132,7 +132,7 @@ FarmbotLogsSchema.statics.fetchCompletedSequences = async function (authorizatio
 	const logs = await axios(url, { headers: { Authorization: authorizationKey } })
 
 	// Map records to a better object [type, message, date]
-	const botLogs: Array<Array<string>> = logs.data.map(function (log: LogsRecord) {
+	const botLogs: Array<LogsRecord> = logs.data.filter(function (log: LogsRecord) {
 		if (log.updated_at.includes(moment.utc().format('YYYY-MM-DD'))) {
 			return [log.type, log.message, log.updated_at]
 		}
@@ -150,14 +150,14 @@ FarmbotLogsSchema.statics.fetchCompletedSequences = async function (authorizatio
 
 		let counter = 0
 
-		botLogs.map(function (entry) {
+		botLogs.map(function (entry: LogsRecord) {
 			// Entry start the sequence
-			if (entry[1].includes(startingForgedLog)) {
+			if (entry.message.includes(startingForgedLog)) {
 				curSequenceStartingIndexes.push(counter)
 			}
 
 			// Entry complete the sequence
-			if (entry[1].includes(completedForgedLog)) {
+			if (entry.message.includes(completedForgedLog)) {
 				curSequenceCompletedIndexes.push(counter)
 			}
 
@@ -189,7 +189,7 @@ FarmbotLogsSchema.statics.fetchUncompletedSequences = async function (authorizat
 	const logs = await axios(url, { headers: { Authorization: authorizationKey } })
 
 	// Map records to a better object [type, message, date]
-	const botLogs: Array<Array<string>> = logs.data.map(function (log: LogsRecord) {
+	const botLogs: Array<LogsRecord> = logs.data.filter(function (log: LogsRecord) {
 		if (log.updated_at.includes(moment.utc().format('YYYY-MM-DD'))) {
 			return [log.type, log.message, log.updated_at]
 		}
@@ -207,14 +207,14 @@ FarmbotLogsSchema.statics.fetchUncompletedSequences = async function (authorizat
 
 		let counter = 0
 
-		botLogs.map(function (entry) {
+		botLogs.map(function (entry: LogsRecord) {
 			// Entry start the sequence
-			if (entry[1].includes(startingForgedLog)) {
+			if (entry.message.includes(startingForgedLog)) {
 				curSequenceStartingIndexes.push(counter)
 			}
 
 			// Entry complete the sequence
-			if (entry[1].includes(completedForgedLog)) {
+			if (entry.message.includes(completedForgedLog)) {
 				curSequenceCompletedIndexes.push(counter)
 			}
 			counter++

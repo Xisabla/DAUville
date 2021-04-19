@@ -119,8 +119,5 @@ dist
 .idea
 .vscode
 
-# Documentation
-doc/
-
 # Local TODO file
 TODO

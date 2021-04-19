@@ -44,6 +44,15 @@ export class Task {
 	/**
 	 * Cron task handled by Modules
 	 * @param task Description of the task
+	 *
+	 * ```typescript
+	 * const task = new Task({
+	 * 		schedule: '* * 10 * * *',
+	 * 		action: () => performActionMethod()
+	 * })
+	 *
+	 * task.start()
+	 * ```
 	 */
 	constructor(task: TaskOptions) {
 		this._id = Task._counter++
@@ -68,6 +77,12 @@ export class Task {
 
 	/**
 	 * Enable the task
+	 *
+	 * ```typescript
+	 * const task = new Task({ ... })
+	 *
+	 * task.start()
+	 * ```
 	 */
 	public start(): void {
 		this._job.start()
@@ -76,6 +91,16 @@ export class Task {
 
 	/**
 	 * Disable the task
+	 *
+	 * ```typescript
+	 * const task = new Task({ ... })
+	 *
+	 * task.start()
+	 *
+	 * ...
+	 *
+	 * task.stop()
+	 * ```
 	 */
 	public stop(): void {
 		this._job.stop()
@@ -127,6 +152,12 @@ export class Task {
 	 * Get all tasks from the same origin
 	 * @param origin Origin of the tasks, null or 'Orphan' for orphan tasks
 	 * @returns The list of the tasks
+	 *
+	 * ```typescript
+	 * const tasks = Task.from(MyModule)
+	 *
+	 * console.log(`MyModule is running ${tasks.length} task(s)`)
+	 * ```
 	 */
 	public static from(origin: Module | string | null): Task[] {
 		return Task._pool.filter(

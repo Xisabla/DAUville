@@ -38,6 +38,14 @@ export abstract class Module {
 	 * @param name The name of the module
 	 * @param autoInit Should the Module run the async init method (default: true)
 	 * @param wait Should the Application wait for the module's init method to end (default: true)
+	 *
+	 * ```typescript
+	 * export class MyModule extends Module {
+	 * 		constructor(app: Application) {
+	 * 			super(app, 'MyModuleName', true, true)
+	 * 		}
+	 * }
+	 * ```
 	 */
 	constructor(app: Application, name?: string, autoInit = true, wait = true) {
 		this._app = app
@@ -55,6 +63,10 @@ export abstract class Module {
 	/**
 	 * Set the wait flag to the given value
 	 * @param wait New wait flag value
+	 *
+	 * ```typescript
+	 * setWait(true/false)
+	 * ```
 	 */
 	public setWait(wait: boolean): void {
 		this._wait = wait
@@ -66,6 +78,10 @@ export abstract class Module {
 	 * 	at the end of the init method of the Module
 	 * If autoInit is set on false, will just put a Promise.resolve() in the init variable
 	 * @param autoInit Should the Application run the init method
+	 *
+	 * ```typescript
+	 * initialize(true/false)
+	 * ```
 	 */
 	protected initialize(autoInit: boolean): void {
 		this._init = autoInit ? this.init() : Promise.resolve()
@@ -75,6 +91,12 @@ export abstract class Module {
 	 * Init method that is made to be overwritten with any async initialization that the server has
 	 * 	to wait to be over before starting
 	 * @returns A promise of the async process
+	 *
+	 * ```typescript
+	 * await this.init()
+	 * console.log('Module initialization done.')
+	 * // Do stuff that has to wait the init
+	 * ```
 	 */
 	protected async init(): Promise<any> {
 		return Promise.resolve()
@@ -100,6 +122,10 @@ export abstract class Module {
 	/**
 	 * Add an endpoint to the module endpoints
 	 * @param endpoint Endpoint to add
+	 *
+	 * ```typescript
+	 * addEndpoint(myEndpoint)
+	 * ```
 	 */
 	protected addEndpoint(endpoint: Endpoint): void {
 		this._endpoints.push(endpoint)
@@ -107,6 +133,10 @@ export abstract class Module {
 
 	/**
 	 * Add multiple endpoints
+	 *
+	 * ```typescript
+	 * addEndpoints([ endpoint1, endpoint2, ... ])
+	 * ```
 	 */
 	protected addEndpoints(endpoints: Endpoint[]): void {
 		endpoints.map((endpoint) => this.addEndpoint(endpoint))
@@ -122,12 +152,61 @@ export abstract class Module {
 	/**
 	 * Listener for new client socket connection
 	 * @param socket Client socket
+	 *
+	 * ```typescript
+	 * // Application
+	 * onSocketJoin((socket) => {
+	 * 		this._modules.forEach((module) => {
+	 * 			module.onSocketJoin(socket)
+	 * 		})
+	 * })
+	 *
+	 * // MyModule
+	 * public onSocketJoin(socket) {
+	 * 		console.log(`Socket ${socket.id} joined`)
+	 * }
+	 *
+	 * // index.ts
+	 * const app = new Application({...})
+	 * ...
+	 * app.registerModule(MyModule)
+	 * ...
+	 *
+	 * // When a socket joins the server
+	 * // console: "Socket xZicnuePG5WehCSKAAAB joined"
+	 * ```
 	 */
 	public onSocketJoin(socket: Socket): any {}
 
 	/**
 	 * Listener for disconnected client sockets
 	 * @param socket Client socket
+	 *
+	 * ```typescript
+	 * // Application
+	 * onSocketJoin((socket) => {
+	 * 		...
+	 * 		socket.on('disconnected', (socket) => {
+	 * 			this.modules.forEach((module) => {
+	 * 				module.onSocketLeave(socket)
+	 * 			})
+	 * 		})
+	 * })
+	 *
+	 * // MyModule
+	 * public onSocketLeave(socket) {
+	 * 		console.log(`Socket ${socket.id} leaved`)
+	 * }
+	 *
+	 * // index.ts
+	 * const app = new Application({...})
+	 * ...
+	 * app.registerModule(MyModule)
+	 * ...
+	 *
+	 * // When a socket leaves the server
+	 * // console: "Socket xZicnuePG5WehCSKAAAB leaved"
+	 * ```
 	 */
 	public onSocketLeave(socket: Socket): any {}
 
@@ -139,6 +218,20 @@ export abstract class Module {
 	 * @param action Action the will be run on schedule
 	 * @param start Does auto start (default: true)
 	 * @returns The task
+	 *
+	 * ```typescript
+	 * export class MyModule extends Module {
+	 * 		constructor(app: Application) {
+	 * 			...
+	 *
+	 * 			// Perform task every day at 10h00
+	 * 			this.registerTask('* * 10 * * *', this.performMyTask.bind(this), true)
+	 * 		}
+	 *
+	 * 		public async performMyTask() {
+	 * 			...
+	 * 		}
+	 * }
 	 */
 	protected registerTask(schedule: TaskSchedule, action: TaskAction, start = true): Task {
 		return new Task({ origin: this, schedule, action, start })

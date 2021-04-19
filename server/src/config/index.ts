@@ -45,11 +45,13 @@ export function devProdEnv(devKey: string, prodKey: string, defaultValue: string
 import app from './application'
 import db from './database'
 import jwt from './farmbot'
+import mail from './mail'
 import security from './security'
 
 export default {
 	app,
 	db,
 	security,
-	jwt
+	jwt,
+	mail
 }

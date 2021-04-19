@@ -43,6 +43,21 @@ export class UserModule extends Module {
 	 * 		eg: /login?email=test.test@test.test&password=passw0rd
 	 *
 	 *  Response: { message: 'success', user: UserSchema }
+	 *
+	 * ```typescript
+	 * const email = '...'
+	 * const password = '...'
+	 *
+	 * const user = await fetch(`/login?email=${email}&password=${password}`, { method: 'POST' })
+	 * 		.then((res) => res.json())
+	 *
+	 * if(!user.error) {
+	 * 		console.log('Login successful !')
+	 *
+	 * 		localStorage.setItem('user.email', user.email)
+	 * 		localStorage.setItem('user.token', user.token)
+	 * }
+	 * ```
 	 */
 	public async postLoginHandler(req: Request, res: Response): Promise<void> {
 		const { email, password } = req?.query ?? {}
@@ -114,6 +129,21 @@ export class UserModule extends Module {
 	 * 		eg: /register?email=test.test@test.test&password=passw0rd&type=USER&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNjE4ODIyNDgyfQ.FHDzAl7aWGW9GfUbc2n-B23VPk4aVa6cEdqU3ryvuR4
 	 *
 	 *  Response: { message: 'success', user: UserSchema }
+	 *
+	 * ```typescript
+	 * const email = '...'
+	 * const password = '...'
+	 * const token = '...'
+	 *
+	 * const user = await fetch(`/register?email=${email}&password=${password}&token=${token}`, { method: 'POST' })
+	 * 		.then((res) => res.json())
+	 *
+	 * if(!user.error) {
+	 * 		console.log('User successfully created !')
+	 *
+	 * 		console.log(user) // { email: '...', password: '...', type: '...', token: null }
+	 * }
+	 * ```
 	 */
 	public async postRegisterHandler(req: Request, res: Response): Promise<void> {
 		const { email, password } = req?.query ?? {}
@@ -197,6 +227,17 @@ export class UserModule extends Module {
 	 * 		eg: /logout?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJoZWxsbyI6IndvcmxkIiwiaWF0IjoxNjE4ODIyNDgyfQ.FHDzAl7aWGW9GfUbc2n-B23VPk4aVa6cEdqU3ryvuR4
 	 *
 	 * Response: { message: 'success', disconnected: true }
+	 *
+	 * ```typescript
+	 * const token = '...'
+	 *
+	 * const res = await fetch(`/logout?token=${token}`, { method: 'POST' })
+	 * 		.then((res) => res.json())
+	 *
+	 * if(!res.error) {
+	 * 		console.log('Disconnected successfully !')
+	 * }
+	 * ```
 	 */
 	public async postLogoutHandler(req: Request, res: Response): Promise<void> {
 		// NOTE: Session might not work as the client might be working with fetch, consider only the given query parameters

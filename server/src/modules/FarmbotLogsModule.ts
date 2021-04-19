@@ -61,6 +61,19 @@ export class FarmbotLogsModule extends Module {
 	 * 		eg: /getFarmbotDailySumUp?since=1618319759&until=1618320417 (search for entries between dates 2021-04-13T13:15:59.000Z and 2021-04-13T13:26:57.000Z)
 	 *
 	 * Response: FarmbotLogsSchema[]
+	 *
+	 * ```typescript
+	 * // Client
+	 * const sumups = fetch('/getFarmbotDailySumUp').then((res) => res.json())
+	 *
+	 * if(sumups.error) {
+	 * 		// Handle error
+	 * 		...
+	 * } else {
+	 * 		const todaySumup = sumups[sumups.length - 1]
+	 * 		console.log(todaySumup) // { date: ..., completedSequences: [ ... ], uncompletedSequences: [ ... ], errorLogs: [ ... ] }
+	 * }
+	 * ```
 	 */
 	private async getFarmbotDailySumUpHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}

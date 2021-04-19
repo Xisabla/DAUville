@@ -78,6 +78,15 @@ export class OccupancyRateModule extends Module {
 	 * Query parameters: none
 	 *
 	 * Response: { modules: ORModuleSchema[] }
+	 *
+	 * ```typescript
+	 * const module = await('/getOCModules', { method: 'GET' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module) // [ { name: '...', units: [ [...], [...], ... ] }, { name: '...', units: [ [...], [...], ... ] }, ... ]
+	 * }
+	 * ```
 	 */
 	public async getModulesHandler(req: Request, res: Response): Promise<void> {
 		try {
@@ -108,6 +117,15 @@ export class OccupancyRateModule extends Module {
 	 * 		eg: /getOCModule?name=Aquaponic%20greenhouse
 	 *
 	 * Response: { module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/getOCModule?name=Aquaponic%20greenhouse', { method: 'GET' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module) // { name: '...', units: [ [...], [...], ... ] }
+	 * }
+	 * ```
 	 */
 	public async getModuleHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -175,6 +193,15 @@ export class OccupancyRateModule extends Module {
 	 * 			/addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=-1
 	 *
 	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/addOCUnit?name=Aquaponic%20greenhouse&name=Plantation%20tower&slots=6&groupIndex=2', { method: 'POST' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][module.module[2].length - 1].slots) // The unit that you just created
+	 * }
+	 * ```
 	 */
 	public async addUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -268,6 +295,15 @@ export class OccupancyRateModule extends Module {
 	 * 		eg: /moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6&to=0
 	 *
 	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/moveOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6&to=0', { method: 'PUT' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[0][module.module[0].length - 1].slots) // The unit that you just moved
+	 * }
+	 * ```
 	 */
 	public async moveUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -385,6 +421,15 @@ export class OccupancyRateModule extends Module {
 	 * 		eg: /changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6&slots=12
 	 *
 	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/changeOCUnitSlots?name=Aquaponic%20greenhouse&group=2&unit=6&slots=12', { method: 'PUT' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][6].slots) // 12
+	 * }
+	 * ```
 	 */
 	public async changeUnitSlotsHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -501,6 +546,15 @@ export class OccupancyRateModule extends Module {
 	 * 		eg: /removeOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6
 	 *
 	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/removeOCUnit?name=Aquaponic%20greenhouse&group=2&unit=6', { method: 'DELETE' })
+	 * 	.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][6].length) // Length before the fetch -1
+	 * }
+	 * ```
 	 */
 	public async removeUnitHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}
@@ -622,6 +676,15 @@ export class OccupancyRateModule extends Module {
 	 * 		eg: /editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry&comment=Comment%20example%20here
 	 *
 	 * Response: { message: 'success', module: ORModuleSchema }
+	 *
+	 * ```typescript
+	 * const module = await('/editOCElement?name=Aquaponic%20greenhouse&group=2&unit=6&element=3&value=strawberry&comment=Comment%20example%20here', { method: 'PUT' })
+	 * 		.then((res) => res.json())
+	 *
+	 * if(!module.error) {
+	 * 		console.log(module.module[2][6][3]) // { value: 'strawberry', comment: 'Comment example here' }
+	 * }
+	 * ```
 	 */
 	public async editElementHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}

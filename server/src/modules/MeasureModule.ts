@@ -123,6 +123,15 @@ export class MeasureModule extends Module {
 	 * 		eg: /getMyFoodMeasures?limit=4 (will only return 4 maximum  results)
 	 *
 	 * Response: MeasureSchema[]
+	 *
+	 * ```typescript
+	 * const lastMeasures = await fetch('/getMyFoodMeasures&limit=6')
+	 * 		.then((res) => res.json())
+	 *
+	 * if(!lastMeasures.error) {
+	 * 		console.log(lastMeasures) // [ { sensor: '...', captureDate: ..., value: ... }, { sensor: '...', captureDate: ..., value: ... }, ... ]
+	 * }
+	 * ```
 	 */
 	public async getMyFoodMeasuresHandler(req: Request, res: Response): Promise<void> {
 		const query = req?.query ?? {}

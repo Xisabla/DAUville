@@ -38,7 +38,7 @@ export const FarmbotLogsSchema = new Schema<IFarmbotLogsSchema, Model<IFarmbotLo
 		uncompletedSequences: { type: Array, required: false },
 		errorLogs: { type: Array, required: false }
 	},
-	{ collection: 'farmbotlogs' }
+	{ collection: 'farmbotlogs', timestamps: true }
 )
 
 // ---- Model Interface ------------------------------------------------------------------

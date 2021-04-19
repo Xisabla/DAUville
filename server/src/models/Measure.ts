@@ -43,7 +43,7 @@ export const MeasureSchema = new Schema<IMeasureSchema, Model<IMeasureSchema>>(
 		captureDate: { type: Date, required: true },
 		value: { type: Number, required: true }
 	},
-	{ collection: 'measures' }
+	{ collection: 'measures', timestamps: true }
 )
 
 // ---- Model Interface ------------------------------------------------------------------

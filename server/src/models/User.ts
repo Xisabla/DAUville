@@ -49,7 +49,7 @@ export const UserSchema = new Schema<IUserSchema, Model<IUserSchema>>(
 		},
 		token: { type: String, required: false, default: null }
 	},
-	{ collection: 'users' }
+	{ collection: 'users', timestamps: true }
 )
 
 // ---- Model Interface ------------------------------------------------------------------

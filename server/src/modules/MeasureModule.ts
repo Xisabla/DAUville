@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import moment from 'moment'
 
+import config from '../config'
 import { Application, Module } from '../core'
 import { IMeasureSchema, Measure, Sensor } from '../models'
 
@@ -33,7 +34,7 @@ export class MeasureModule extends Module {
 
 		// NOTE: This is temporarily hardcoded, this value should be editable by an administrator user (or from a config file or whatever)
 		// NOTE²: Serre ISA Lille: 29 - Serre de test (Brest): 191
-		const greenhouseId = 191
+		const greenhouseId = config.app.greenhouseId
 
 		try {
 			// Fetch records that are not already in the database
@@ -59,7 +60,7 @@ export class MeasureModule extends Module {
 	public async updateMyFoodMeasures(): Promise<IMeasureSchema[]> {
 		// NOTE: This is temporarily hardcoded, this value should be editable by an administrator user (or from a config file or whatever)
 		// NOTE²: Serre ISA Lille: 29 - Serre de test (Brest): 191
-		const greenhouseId = 191
+		const greenhouseId = config.app.greenhouseId
 
 		this._log('Updating myfood measures')
 

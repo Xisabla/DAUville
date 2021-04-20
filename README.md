@@ -26,14 +26,14 @@ Now, the client files are bundled and the server is running on the given port, e
 
 **NOTE**: By default, the application will start even if the database connection fails (eg: the database server is down, the credentials are wrong, ...), however the application won't work really fine. In this case you will be able to read this message in the console to warn you:
 
-![Database error](./.github/images/db-error.png)
+![Database error](https://raw.githubusercontent.com/Xisabla/DAUville/main/.github/images/db-error.png)
 
 ## Global presentation and behaviors
 ### Exchanges and back-end structure
 
 The project aims into collecting information from external resources (APIs, databases, ...) and to process them and serve them to the clients.
 
-![Basic exchanges overview](./.github/images/basic-exchanges.png)
+![Basic exchanges overview](https://raw.githubusercontent.com/Xisabla/DAUville/main/.github/images/basic-exchanges.png)
 
 The webserver is connected to a mongoDB database to store its valuable data, and most of the retrieving operations to collect data from the external resources are API calls.
 
@@ -41,7 +41,7 @@ The webserver has 2 types of connections with the clients to manage data flux:
 - HTTP endpoints (request/response): for the client to fetch the data from the server
 - Websockets: Mostly for the server to dispatch events (eg: new data collected)
 
-![Application exchanges](./.github/images/application-exchanges.png)
+![Application exchanges](https://raw.githubusercontent.com/Xisabla/DAUville/main/.github/images/application-exchanges.png)
 
 The hole server and its different endpoints and proccesses are stored in the [`Application`](https://xisabla.github.io/DAUville/doc/server/classes/application.html) object.
 
@@ -51,7 +51,7 @@ This objects contains [`Modules`](https://xisabla.github.io/DAUville/doc/server/
 
 #### Example 1: Module fetching data
 
-![Module data fetch](./.github/images/module-data-fetch.png)
+![Module data fetch](https://raw.githubusercontent.com/Xisabla/DAUville/main/.github/images/module-data-fetch.png)
 
 - At time *T*, one of the task of the module is triggered. The module is sending a request to an external API to fetch some data.
 - At time *T + 1*, the external resource respond with the data.
@@ -60,7 +60,7 @@ This objects contains [`Modules`](https://xisabla.github.io/DAUville/doc/server/
 
 #### Example 2: User requesting for data
 
-![Client data fetch](./.github/images/client-data-fetch.png)
+![Client data fetch](https://raw.githubusercontent.com/Xisabla/DAUville/main/.github/images/client-data-fetch.png)
 
 - At time *T*, the user will emit a request to the HTTP Server of the Application object, requesting data (eg: fetching `/getMyFoodMeasures`).
 - At time *T + 1*, the server will recognize the route and redirect to the endpoint store in the related module (in our example, the module will be [`MeasureModule`](https://xisabla.github.io/DAUville/doc/server/classes/measuremodule.html#getmyfoodmeasureshandler)).

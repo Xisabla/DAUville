@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 
 import config from '../config'
 import { Application, Module } from '../core'
-import { FarmbotLogs } from '../models'
+import { FarmbotLogs, LogsRecord } from '../models'
 
 // ---- Module ---------------------------------------------------------------------------
 export class FarmbotLogsModule extends Module {
@@ -36,63 +36,94 @@ export class FarmbotLogsModule extends Module {
 	private async updateFarmbotDailySumUp(): Promise<void> {
 		this._log('Adding Farmbot daily sum up...')
 
+		// JWT to connect to the farmbot api
 		const authorizationKey = config.jwt.token as string
 
-		// const mailUser = config.mail.user
-		// const mailPass = config.mail.pass
+		// Mail service credentials
+		const mailUser = config.mail.user
+		const mailPass = config.mail.pass
 
 		try {
 			// Fetch the farmbot logs and store them to sum up
 			const sumup = await FarmbotLogs.fetchFarmbotDailySumup(authorizationKey)
 
-			// Sum the sumup
+			// Save the sumup
 			await sumup.save()
+
+			if (config.mail.sendMail == 'true') {
 
 			//---------------------------------------------------------------------------------------------------------------
 			// 											DAILY SUM UP MAIL DELIVERY
 			//---------------------------------------------------------------------------------------------------------------
 
-			// Because the IT support does not want to provide us an email address for the project, the following section is
-			// commented. Feel free to uncomment it as soon as you get an email address.
+				// Creating the beginning of the mailString with the current date in format YYYY-MM-DD
+				const mailBeginningString =
+					'Greetings, here is the ' + moment.utc().format('YYYY-MM-DD').toString() + ' FarmBot report.<br><br>'
 
-			//---------------------------------------------------------------------------------------------------------------
-			// const mailBeginningString =
-			// 	'Greetings, here is the ' + moment.utc().format('YYYY-MM-DD').toString() + ' FarmBot report. \n\n'
-			// const completedSequencesString = 'Completed sequences : \n' + sumup.get('completedSequences') + '\n\n'
-			// const uncompletedSequencesString = 'Uncompleted sequences : \n' + sumup.get('uncompletedSequences') + '\n\n'
-			// const errorsString =
-			// 	'These errors happened this day : \n' +
-			// 	sumup.get('errorLogs').map((e: LogsRecord) => e.message + ' -- ' + e.updated_at + '\n')
+				// Creating the part containing all the completed sequences
+				const completedSequencesString =
+					'<dl><dt>Completed sequences :</dt>' +
+					sumup
+						.get('completedSequences')
+						.map(function (e: string) {
+							return '<dd> -' + e + '</dd>'
+						})
+						.join('') +
+					'<br><br>'
 
-			// const mailString =
-			// 	mailBeginningString + completedSequencesString + uncompletedSequencesString + errorsString
+				// Creating the part containing all the uncompleted sequences
+				const uncompletedSequencesString =
+					'<dt>Uncompleted sequences : </dt>' +
+					sumup
+						.get('uncompletedSequences')
+						.map(function (e: string) {
+							return '<dd> -' + e + '</dd>'
+						})
+						.join('') +
+					'<br><br>'
 
-			// const transporter = nodemailer.createTransport({
-			// 	host: 'smtp.office365.com',
-			// 	port: 587,
-			// 	secure: false,
-			// 	auth: {
-			// 		user: mailUser,
-			// 		pass: mailPass
-			// 	}
-			// })
+				// Creating the part containing all the errors
+				const errorsString =
+					'<dt>Errors reported today : </dt>' +
+					sumup
+						.get('errorLogs')
+						.map((e: LogsRecord) => '<dd>' + e.updated_at + ' --- ' + e.message + '</dd>')
+						.join('<br><br>') +
+					'</dl>'
 
-			// transporter.sendMail(
-			// 	{
-			// 		from: mailUser,
-			// 		to: [mail recipients],
-			// 		subject: moment.utc().format('YYYY-MM-DD') + ' FarmBot Report',
-			// 		text: mailString
-			// 	},
-			// 	function (err, info) {
-			// 		if (err) {
-			// 			log(err)
-			// 		} else {
-			// 			log('Email sent: ' + info.response)
-			// 		}
-			// 	}
-			// )
-			//---------------------------------------------------------------------------------------------------------------
+				// Merging all the parts in a String
+				const mailString =
+					mailBeginningString + completedSequencesString + uncompletedSequencesString + errorsString
+
+				// Connect to the SMTP service
+				const transporter = nodemailer.createTransport({
+					host: 'smtp.office365.com',
+					port: 587,
+					secure: false,
+					auth: {
+						user: mailUser,
+						pass: mailPass
+					}
+				})
+
+				// Send the mail containing the mailString to a given address
+				transporter.sendMail(
+					{
+						from: mailUser,
+						to: 'brandon.oneill@student.junia.com', // Recipient input can be a list of addresses each separated by a comma
+						cc: 'audrey.michenaud-rague@junia.com,benjamin.legrand@junia.com',
+						subject: moment.utc().format('YYYY-MM-DD') + ' FarmBot Report',
+						html: mailString
+					},
+					function (err, info) {
+						if (err) {
+							this._log(err)
+						} else {
+							this._log('Email sent: ' + info.response)
+						}
+					}
+				)
+			}
 		} catch (error) {
 			this._log(`An error happened while fetching Farmbot API: ${error}`)
 		}

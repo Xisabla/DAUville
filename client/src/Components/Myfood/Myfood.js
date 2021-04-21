@@ -49,7 +49,66 @@ const airHumidityMeasures = filterMeasureData(rawMyfoodData, 'Air Humidity Senso
  * Component that shows Myfood sensor measures
  */
 export class Myfood extends Component {
+	constructor(props) {
+		super(props)
+
+		this.state = {
+			dates,
+			phMeasures,
+			waterTemperatureMeasures,
+			airTemperatureMeasures,
+			externalAirHumidityMeasures,
+			externalAirTemperatureMeasures,
+			airHumidityMeasures
+		}
+	}
+
+	componentDidMount() {
+		const since = moment.utc().add(-10, 'days').unix()
+		const url = `/getMyFoodMeasures?since=${since}&limit=100`
+
+		console.log(url)
+		fetch(url)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data && !data.error) {
+					const dates = data
+						.filter((measure) => measure.sensor === 'water temperature')
+						.map((measure) => measure.captureDate)
+						.filter((date) => date)
+						.map((date) => moment.utc(date).toDate())
+
+					const phMeasures = filterMeasureData(data, 'ph')
+					const waterTemperatureMeasures = filterMeasureData(data, 'water temperature').reverse()
+					const airTemperatureMeasures = filterMeasureData(data, 'air temperature').reverse()
+					const externalAirTemperatureMeasures = filterMeasureData(data, 'external air temperature').reverse()
+					const externalAirHumidityMeasures = filterMeasureData(data, 'external air humidity').reverse()
+					const airHumidityMeasures = filterMeasureData(data, 'humidity').reverse()
+
+					this.setState({
+						dates,
+						phMeasures,
+						waterTemperatureMeasures,
+						airTemperatureMeasures,
+						externalAirHumidityMeasures,
+						externalAirTemperatureMeasures,
+						airHumidityMeasures
+					})
+				}
+			})
+	}
+
 	render() {
+		const {
+			dates,
+			phMeasures,
+			waterTemperatureMeasures,
+			airTemperatureMeasures,
+			externalAirHumidityMeasures,
+			externalAirTemperatureMeasures,
+			airHumidityMeasures
+		} = this.state
+
 		let waterGraphData = {
 			labels: dates,
 			series: [waterTemperatureMeasures]

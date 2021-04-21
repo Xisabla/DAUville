@@ -51,14 +51,15 @@ export class FarmbotLogsModule extends Module {
 			await sumup.save()
 
 			if (config.mail.sendMail == 'true') {
-
-			//---------------------------------------------------------------------------------------------------------------
-			// 											DAILY SUM UP MAIL DELIVERY
-			//---------------------------------------------------------------------------------------------------------------
+				//---------------------------------------------------------------------------------------------------------------
+				// 											DAILY SUM UP MAIL DELIVERY
+				//---------------------------------------------------------------------------------------------------------------
 
 				// Creating the beginning of the mailString with the current date in format YYYY-MM-DD
 				const mailBeginningString =
-					'Greetings, here is the ' + moment.utc().format('YYYY-MM-DD').toString() + ' FarmBot report.<br><br>'
+					'Greetings, here is the ' +
+					moment.utc().format('YYYY-MM-DD').toString() +
+					' FarmBot report.<br><br>'
 
 				// Creating the part containing all the completed sequences
 				const completedSequencesString =

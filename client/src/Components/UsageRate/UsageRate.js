@@ -14,12 +14,6 @@ export class usageRate extends Component {
 	handlePlantsInput(nbText) {
 		this.setState({ nbText: nbText })
 	}
-	handleRowDel(plant) {
-		var index = this.state.plants.indexOf(plant)
-		this.state.plants.splice(index, 1)
-		console.log(index)
-		this.setState(this.state.plants)
-	}
 
 	handleAddEvent() {
 		if (this.state.plants.length < this.state.nbText) {
@@ -58,7 +52,12 @@ export class usageRate extends Component {
 		}
 		this.counters = counters
 	}
-
+	handleRowDel(plant) {
+		var index = this.state.plants.indexOf(plant)
+		this.state.plants.splice(index, 1)
+		console.log(index)
+		this.setState(this.state.plants)
+	}
 	render() {
 		return (
 			<div className="content">
@@ -159,7 +158,7 @@ class PlantTable extends React.Component {
 					<thead>
 						<tr>
 							<th colSpan="1" className="Rowcss">
-								Usage Rate :{(1 - (EmptyItemCounter / plant.length).toFixed(2)) * 100} %
+								<b>Usage Rate : {(1 - (EmptyItemCounter / plant.length).toFixed(2)) * 100} % </b>
 							</th>
 						</tr>
 					</thead>

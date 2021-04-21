@@ -9,7 +9,7 @@
     "doc": "npm-run-all client-doc server-doc",
     "prestart": "npm run client-build",
     "install": "npm-run-all client-install server-install",
-    "client-install": "cd client && npm install",
+    "client-install": "cd client && npm install --force",
     "client-build": "npm run build --prefix=./client",
     "client-clean": "npm run clean --prefix=./client",
     "client-dev": "npm run dev --prefix=./client",
@@ -28,10 +28,6 @@
   },
   "homepage": "https://github.com/Xisabla/DAUville#readme",
   "dependencies": {
-    "apexcharts": "^3.26.1",
-    "chartist": "^0.11.4",
-    "npm-run-all": "^4.1.5",
-    "react-chartist": "^0.14.4",
-    "react-json-to-table": "^0.1.7"
+    "npm-run-all": "^4.1.5"
   }
 }

@@ -48,6 +48,12 @@ export class Sidebar extends Component {
 								<p>Cultivation Carts</p>
 							</NavLink>
 						</li>
+						<li className="nav-item">
+							<NavLink className="nav-link" to="/usageRate">
+								<i className="nc-icon nc-app"></i>
+								<p>Usage Rate</p>
+							</NavLink>
+						</li>
 					</ul>
 				</div>
 			</div>

@@ -7,6 +7,7 @@ import React, { Component } from 'react'
 import { BrowserRouter as Router, Link, Redirect, Route, Switch } from 'react-router-dom'
 
 import { CultivationCarts, Dashboard, Farmbot, Footer, Login, Myfood, Register, Sidebar, UserProfile } from '../'
+import { usageRate } from '../UsageRate/UsageRate'
 
 /**
  * Component that manage the routes
@@ -24,6 +25,7 @@ export class Main extends Component {
 					<Route path="/Farmbot" component={Farmbot} />
 					<Route path="/Myfood" component={Myfood} />
 					<Route path="/Carts" component={CultivationCarts} />
+					<Route path="/UsageRate" component={usageRate} />
 					<Route path="/Login" component={Login} />
 					<Route path="/Register" component={Register} />
 					<Route path="/Home">

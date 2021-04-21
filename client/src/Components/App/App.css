@@ -95,6 +95,10 @@ code {
 	border-radius: 50%;
 }
 
+.Rowcss{
+	text-align: center;
+  }
+  
 .testt {
 	border-radius: 4px;
 	background-color: #FFFFFF;

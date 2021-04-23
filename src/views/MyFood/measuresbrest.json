@@ -1,0 +1,615 @@
+[
+  {
+    "Id": 77385779,
+    "captureDate": "2021-04-12T14:51:39.953",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77385780,
+    "captureDate": "2021-04-12T14:51:39.953",
+    "value": 19.40,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77385781,
+    "captureDate": "2021-04-12T14:51:39.953",
+    "value": 25.90,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77385782,
+    "captureDate": "2021-04-12T14:51:39.953",
+    "value": 30.80,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77385777,
+    "captureDate": "2021-04-12T14:51:39.953",
+    "value": 10.71,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77385778,
+    "captureDate": "2021-04-12T14:51:39.953",
+    "value": 54.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77384959,
+    "captureDate": "2021-04-12T14:31:41.703",
+    "value": 54.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77384958,
+    "captureDate": "2021-04-12T14:31:41.703",
+    "value": 10.71,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77384963,
+    "captureDate": "2021-04-12T14:31:41.703",
+    "value": 31.00,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77384962,
+    "captureDate": "2021-04-12T14:31:41.703",
+    "value": 25.90,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77384961,
+    "captureDate": "2021-04-12T14:31:41.703",
+    "value": 19.30,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77384960,
+    "captureDate": "2021-04-12T14:31:41.703",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77384558,
+    "captureDate": "2021-04-12T14:21:41.123",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77384559,
+    "captureDate": "2021-04-12T14:21:41.123",
+    "value": 19.30,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77384560,
+    "captureDate": "2021-04-12T14:21:41.123",
+    "value": 25.80,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77384561,
+    "captureDate": "2021-04-12T14:21:41.123",
+    "value": 31.40,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77384556,
+    "captureDate": "2021-04-12T14:21:41.123",
+    "value": 10.71,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77384557,
+    "captureDate": "2021-04-12T14:21:41.123",
+    "value": 54.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77383773,
+    "captureDate": "2021-04-12T14:01:40.233",
+    "value": 50.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77383772,
+    "captureDate": "2021-04-12T14:01:40.233",
+    "value": 10.59,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77383777,
+    "captureDate": "2021-04-12T14:01:40.233",
+    "value": 31.90,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77383776,
+    "captureDate": "2021-04-12T14:01:40.233",
+    "value": 25.90,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77383775,
+    "captureDate": "2021-04-12T14:01:40.233",
+    "value": 19.30,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77383774,
+    "captureDate": "2021-04-12T14:01:40.233",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77382985,
+    "captureDate": "2021-04-12T13:41:40.447",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77382986,
+    "captureDate": "2021-04-12T13:41:40.447",
+    "value": 19.20,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77382987,
+    "captureDate": "2021-04-12T13:41:40.447",
+    "value": 26.10,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77382988,
+    "captureDate": "2021-04-12T13:41:40.447",
+    "value": 32.60,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77382983,
+    "captureDate": "2021-04-12T13:41:40.447",
+    "value": 10.60,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77382984,
+    "captureDate": "2021-04-12T13:41:40.447",
+    "value": 50.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77382177,
+    "captureDate": "2021-04-12T13:21:40.887",
+    "value": 50.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77382176,
+    "captureDate": "2021-04-12T13:21:40.887",
+    "value": 10.71,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77382181,
+    "captureDate": "2021-04-12T13:21:40.887",
+    "value": 32.70,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77382180,
+    "captureDate": "2021-04-12T13:21:40.887",
+    "value": 26.10,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77382179,
+    "captureDate": "2021-04-12T13:21:40.887",
+    "value": 19.20,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77382178,
+    "captureDate": "2021-04-12T13:21:40.887",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77380794,
+    "captureDate": "2021-04-12T12:51:46",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77380795,
+    "captureDate": "2021-04-12T12:51:46",
+    "value": 19.10,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77380796,
+    "captureDate": "2021-04-12T12:51:46",
+    "value": 26.10,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77380797,
+    "captureDate": "2021-04-12T12:51:46",
+    "value": 33.00,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77380792,
+    "captureDate": "2021-04-12T12:51:46",
+    "value": 10.71,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77380793,
+    "captureDate": "2021-04-12T12:51:46",
+    "value": 43.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77380261,
+    "captureDate": "2021-04-12T12:41:45.287",
+    "value": 43.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77380260,
+    "captureDate": "2021-04-12T12:41:45.287",
+    "value": 10.99,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77380267,
+    "captureDate": "2021-04-12T12:41:45.287",
+    "value": 33.00,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77380266,
+    "captureDate": "2021-04-12T12:41:45.287",
+    "value": 26.10,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77380265,
+    "captureDate": "2021-04-12T12:41:45.287",
+    "value": 19.10,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77380263,
+    "captureDate": "2021-04-12T12:41:45.287",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77379681,
+    "captureDate": "2021-04-12T12:31:45.89",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77379682,
+    "captureDate": "2021-04-12T12:31:45.89",
+    "value": 19.10,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77379683,
+    "captureDate": "2021-04-12T12:31:45.89",
+    "value": 26.10,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77379684,
+    "captureDate": "2021-04-12T12:31:45.89",
+    "value": 33.10,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77379679,
+    "captureDate": "2021-04-12T12:31:45.89",
+    "value": 10.99,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77379680,
+    "captureDate": "2021-04-12T12:31:45.89",
+    "value": 43.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77379168,
+    "captureDate": "2021-04-12T12:21:45.71",
+    "value": 43.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77379167,
+    "captureDate": "2021-04-12T12:21:45.71",
+    "value": 10.99,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77379172,
+    "captureDate": "2021-04-12T12:21:45.71",
+    "value": 33.10,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77379171,
+    "captureDate": "2021-04-12T12:21:45.71",
+    "value": 26.10,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77379170,
+    "captureDate": "2021-04-12T12:21:45.71",
+    "value": 19.10,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77379169,
+    "captureDate": "2021-04-12T12:21:45.71",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77378660,
+    "captureDate": "2021-04-12T12:11:46.54",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77378661,
+    "captureDate": "2021-04-12T12:11:46.54",
+    "value": 19.00,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77378662,
+    "captureDate": "2021-04-12T12:11:46.54",
+    "value": 26.00,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77378663,
+    "captureDate": "2021-04-12T12:11:46.54",
+    "value": 33.60,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77378658,
+    "captureDate": "2021-04-12T12:11:46.54",
+    "value": 10.43,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77378659,
+    "captureDate": "2021-04-12T12:11:46.54",
+    "value": 46.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77378078,
+    "captureDate": "2021-04-12T12:01:45.597",
+    "value": 46.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77378077,
+    "captureDate": "2021-04-12T12:01:45.597",
+    "value": 10.43,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77378082,
+    "captureDate": "2021-04-12T12:01:45.597",
+    "value": 34.00,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77378081,
+    "captureDate": "2021-04-12T12:01:45.597",
+    "value": 26.00,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77378080,
+    "captureDate": "2021-04-12T12:01:45.597",
+    "value": 19.00,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77378079,
+    "captureDate": "2021-04-12T12:01:45.597",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77377551,
+    "captureDate": "2021-04-12T11:51:45.257",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77377552,
+    "captureDate": "2021-04-12T11:51:45.257",
+    "value": 19.00,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77377553,
+    "captureDate": "2021-04-12T11:51:45.257",
+    "value": 25.90,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77377554,
+    "captureDate": "2021-04-12T11:51:45.257",
+    "value": 34.10,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77377549,
+    "captureDate": "2021-04-12T11:51:45.257",
+    "value": 10.43,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77377550,
+    "captureDate": "2021-04-12T11:51:45.257",
+    "value": 46.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77377017,
+    "captureDate": "2021-04-12T11:41:45.767",
+    "value": 46.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77377016,
+    "captureDate": "2021-04-12T11:41:45.767",
+    "value": 10.43,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77377021,
+    "captureDate": "2021-04-12T11:41:45.767",
+    "value": 34.30,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77377020,
+    "captureDate": "2021-04-12T11:41:45.767",
+    "value": 25.80,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77377019,
+    "captureDate": "2021-04-12T11:41:45.767",
+    "value": 19.00,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77377018,
+    "captureDate": "2021-04-12T11:41:45.767",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77376418,
+    "captureDate": "2021-04-12T11:31:45.253",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77376419,
+    "captureDate": "2021-04-12T11:31:45.253",
+    "value": 19.00,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77376420,
+    "captureDate": "2021-04-12T11:31:45.253",
+    "value": 25.70,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77376421,
+    "captureDate": "2021-04-12T11:31:45.253",
+    "value": 34.50,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77376416,
+    "captureDate": "2021-04-12T11:31:45.253",
+    "value": 10.39,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77376417,
+    "captureDate": "2021-04-12T11:31:45.253",
+    "value": 43.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77375889,
+    "captureDate": "2021-04-12T11:21:45.227",
+    "value": 50.00,
+    "sensor": "External Air Humidity"
+  },
+  {
+    "Id": 77375888,
+    "captureDate": "2021-04-12T11:21:45.227",
+    "value": 9.99,
+    "sensor": "External Air Temperature"
+  },
+  {
+    "Id": 77375893,
+    "captureDate": "2021-04-12T11:21:45.227",
+    "value": 34.60,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77375892,
+    "captureDate": "2021-04-12T11:21:45.227",
+    "value": 25.60,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77375891,
+    "captureDate": "2021-04-12T11:21:45.227",
+    "value": 18.90,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77375890,
+    "captureDate": "2021-04-12T11:21:45.227",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77375375,
+    "captureDate": "2021-04-12T11:11:45.82",
+    "value": 8.40,
+    "sensor": "pH Sensor"
+  },
+  {
+    "Id": 77375376,
+    "captureDate": "2021-04-12T11:11:45.82",
+    "value": 18.90,
+    "sensor": "Water Temperature Sensor"
+  },
+  {
+    "Id": 77375377,
+    "captureDate": "2021-04-12T11:11:45.82",
+    "value": 25.50,
+    "sensor": "Air Temperature Sensor"
+  },
+  {
+    "Id": 77375378,
+    "captureDate": "2021-04-12T11:11:45.82",
+    "value": 34.80,
+    "sensor": "Air Humidity Sensor"
+  },
+  {
+    "Id": 77375379,
+    "captureDate": "2021-04-12T11:11:45.82",
+    "value": 50.00,
+    "sensor": "External Air Humidity"
+  }
+  ,
+  {
+    "Id": 77375380,
+    "captureDate": "2021-04-12T11:11:45.82",
+    "value": 9.97,
+    "sensor": "External Air Temperature"
+  }
+]

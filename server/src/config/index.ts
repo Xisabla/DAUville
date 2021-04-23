@@ -18,7 +18,9 @@ config()
  * ```
  */
 export function defaultEnv(envKey: string, defaultValue: string): string {
-	return Object.keys(process.env).includes(envKey) ? process.env[envKey] : defaultValue
+	const val = Object.keys(process.env).includes(envKey) ? process.env[envKey] : defaultValue
+
+	return val === '' ? defaultValue : val
 }
 
 /**
